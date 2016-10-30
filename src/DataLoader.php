@@ -4,7 +4,6 @@
 namespace leinonen\DataLoader;
 
 
-use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 
@@ -80,9 +79,32 @@ class DataLoader
     }
 
     /**
-     * Clears the value for the given key from the cache if it exists.
+     * Loads multiple keys, promising an array of values.
+     *
+     * This is equivalent to the more verbose:
+     *
+     *  \React\Promise\all([
+     *      $dataLoader->load('a');
+     *      $dataLoader->load('b');
+     *  });
+     *
+     * @param array $keys
+     *
+     * @return Promise
+     */
+    public function loadMany(array $keys)
+    {
+        return \React\Promise\all(array_map(function ($key) {
+            return $this->load($key);
+        }, $keys));
+    }
+
+    /**
+     * Clears the value for the given key from the cache if it exists. Returns itself for method chaining.
      *
      * @param int|string $key
+     *
+     * @return $this
      */
     public function clear($key)
     {
@@ -91,6 +113,40 @@ class DataLoader
         if(isset($this->promiseCache[$cacheKey])) {
             unset($this->promiseCache[$cacheKey]);
         }
+
+        return $this;
+    }
+
+    /**
+     * Clears the entire cache. Returns itself for method chaining.
+     *
+     * @return $this
+     */
+    public function clearAll()
+    {
+        $this->promiseCache = [];
+
+        return $this;
+    }
+
+    /**
+     * Adds the given key and value to the cache. If the key already exists no change is made.
+     * Returns itself for method chaining.
+     *
+     * @param int|string $key
+     * @param int|string $value
+     *
+     * @return $this
+     */
+    public function prime($key, $value)
+    {
+        $cacheKey = $key;
+
+        if(!isset($this->promiseCache[$cacheKey])) {
+            $this->promiseCache[$cacheKey] = $value;
+        }
+
+        return $this;
     }
 
     /**
