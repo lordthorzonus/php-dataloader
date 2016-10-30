@@ -23,7 +23,7 @@ class DataLoader
     /**
      * @var array
      */
-    private $queue = [];
+    private $promiseQueue = [];
 
     /**
      * @var array
@@ -61,13 +61,13 @@ class DataLoader
 
         $promise = new Promise(function (callable $resolve, callable $reject) use ($key) {
 
-            $this->queue[] = [
+            $this->promiseQueue[] = [
                 'key' => $key,
                 'resolve' => $resolve,
                 'reject' => $reject,
             ];
 
-            if(count($this->queue) === 1) {
+            if(count($this->promiseQueue) === 1) {
                 $this->eventLoop->nextTick(function() {
                     $this->dispatchQueue();
                 });
@@ -84,8 +84,8 @@ class DataLoader
      */
     private function dispatchQueue()
     {
-        $queue = $this->queue;
-        $this->queue = [];
+        $queue = $this->promiseQueue;
+        $this->promiseQueue = [];
 
         $maxBatchSize = isset($this->options['maxBatchSize']) ? $this->options['maxBatchSize'] : null;
 
@@ -107,6 +107,7 @@ class DataLoader
             return $queueItem['key'];
         }, $batch);
 
+        /** @var Promise $batchPromise */
         $batchPromise = call_user_func($this->batchLoadFunction, $keys);
 
         $batchPromise->then(function ($values) use ($keys, $batch) {
@@ -142,10 +143,4 @@ class DataLoader
 
         }
     }
-
-    public function execute()
-    {
-        $this->eventLoop->run();
-    }
-
 }
