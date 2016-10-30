@@ -180,6 +180,50 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([['A', 'B'], ['C']], $this->loadCalls);
     }
 
+    /** @test */
+    public function it_can_clear_a_single_value_in_loader()
+    {
+        $identityLoader = $this->createIdentityLoader();
+
+        $a = null;
+        $b = null;
+
+        \React\Promise\all([
+            $identityLoader->load('A'),
+            $identityLoader->load('B')
+        ])->then(function ($returnedValues) use (&$a, &$b) {
+            $a = $returnedValues[0];
+            $b = $returnedValues[1];
+        });
+
+        $this->eventLoop->run();
+
+        $this->assertEquals('A', $a);
+        $this->assertEquals('B', $b);
+
+        $this->assertEquals([['A', 'B']], $this->loadCalls);
+
+        $identityLoader->clear('A');
+
+        $a2 = null;
+        $b2 = null;
+
+        \React\Promise\all([
+            $identityLoader->load('A'),
+            $identityLoader->load('B')
+        ])->then(function ($returnedValues) use (&$a2, &$b2) {
+            $a2 = $returnedValues[0];
+            $b2 = $returnedValues[1];
+        });
+
+        $this->eventLoop->run();
+
+        $this->assertEquals('A', $a2);
+        $this->assertEquals('B', $b2);
+
+        $this->assertEquals([['A', 'B'], ['A']], $this->loadCalls);
+    }
+
     private function createIdentityLoader($options = [])
     {
         $this->loadCalls = [];

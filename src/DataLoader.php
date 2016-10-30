@@ -80,6 +80,20 @@ class DataLoader
     }
 
     /**
+     * Clears the value for the given key from the cache if it exists.
+     *
+     * @param int|string $key
+     */
+    public function clear($key)
+    {
+        $cacheKey = $key;
+
+        if(isset($this->promiseCache[$cacheKey])) {
+            unset($this->promiseCache[$cacheKey]);
+        }
+    }
+
+    /**
      * Resets and dispatches the DataLoaders queue.
      */
     private function dispatchQueue()
