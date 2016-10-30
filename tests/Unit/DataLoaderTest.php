@@ -5,12 +5,24 @@ namespace leinonen\DataLoader\Tests\Unit;
 
 
 use leinonen\DataLoader\DataLoader;
+use React\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 
 class DataLoaderTest extends \PHPUnit_Framework_TestCase
 {
 
     private $loadCalls;
+
+    /**
+     * @var LoopInterface
+     */
+    private $eventLoop;
+
+    public function setUp()
+    {
+        $this->eventLoop = Factory::create();
+    }
 
     /** @test */
     public function it_builds_a_really_simple_data_loader()
@@ -19,7 +31,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
             return \React\Promise\resolve($keys)->then(function ($value) {
                 return $value;
             });
-        });
+        }, $this->eventLoop);
 
         /** @var Promise $promise1 */
         $promise1 = $identityLoader->load(1);
@@ -30,8 +42,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $promise1->then(function ($value) use (&$value1) {
             $value1 = $value;
-        });
-        $identityLoader->execute();
+        });$this->eventLoop->run();
         $this->assertEquals(1, $value1);
     }
 
@@ -49,7 +60,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
             $values = $returnedValues;
         });
 
-        $identityLoader->execute();
+        $this->eventLoop->run();
 
         $this->assertEquals(1, $values[0]);
         $this->assertEquals(2, $values[1]);
@@ -72,7 +83,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
             $values = $returnedValues;
         });
 
-        $identityLoader->execute();
+        $this->eventLoop->run();
 
         $this->assertEquals(1, $values[0]);
         $this->assertEquals(2, $values[1]);
@@ -97,7 +108,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
             $values = $returnedValues;
         });
 
-        $identityLoader->execute();
+        $this->eventLoop->run();
 
         $this->assertEquals(1, $values[0]);
         $this->assertEquals(1, $values[1]);
@@ -121,7 +132,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
             $b = $returnedValues[1];
         });
 
-        $identityLoader->execute();
+        $this->eventLoop->run();
 
         $this->assertEquals('A', $a);
         $this->assertEquals('B', $b);
@@ -139,7 +150,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
             $c = $returnedValues[1];
         });
 
-        $identityLoader->execute();
+        $this->eventLoop->run();
 
         $this->assertEquals('A', $a2);
         $this->assertEquals('C', $c);
@@ -160,7 +171,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
             $c2 = $returnedValues[2];
         });
 
-        $identityLoader->execute();
+        $this->eventLoop->run();
 
         $this->assertEquals('A', $a3);
         $this->assertEquals('B', $b2);
@@ -179,7 +190,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
             return \React\Promise\resolve($keys)->then(function ($value) {
                 return $value;
             });
-        }, $options);
+        }, $this->eventLoop,  $options);
 
         return $identityLoader;
     }

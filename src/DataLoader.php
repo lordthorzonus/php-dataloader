@@ -5,6 +5,7 @@ namespace leinonen\DataLoader;
 
 
 use React\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 
 class DataLoader
@@ -33,13 +34,14 @@ class DataLoader
      * Initiates a new DataLoader.
      *
      * @param callable $batchLoadFunction
+     * @param LoopInterface $loop
      * @param array $options
      */
-    public function __construct(callable $batchLoadFunction, $options = [])
+    public function __construct(callable $batchLoadFunction, LoopInterface $loop, $options = [])
     {
         $this->batchLoadFunction = $batchLoadFunction;
         $this->options = $options;
-        $this->eventLoop = Factory::create();
+        $this->eventLoop = $loop;
     }
 
     /**
