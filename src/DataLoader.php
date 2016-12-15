@@ -143,7 +143,11 @@ class DataLoader
         $cacheKey = $key;
 
         if(!isset($this->promiseCache[$cacheKey])) {
-            $this->promiseCache[$cacheKey] = $value;
+            // Cache a rejected promise if the value is an Exception, in order to match
+            // the behavior of load(key).
+            $promise = $value instanceof \Exception ? \React\Promise\reject($value) : \React\Promise\resolve($value);
+
+            $this->promiseCache[$cacheKey] = $promise;
         }
 
         return $this;
@@ -173,24 +177,23 @@ class DataLoader
      */
     private function dispatchQueueBatch($batch)
     {
-        $keys = array_map(function ($queueItem) {
-            return $queueItem['key'];
-        }, $batch);
+        $keys = array_column($batch, 'key');
 
+        $batchLoadFunction = $this->batchLoadFunction;
         /** @var Promise $batchPromise */
-        $batchPromise = call_user_func($this->batchLoadFunction, $keys);
+        $batchPromise = $batchLoadFunction($keys);
 
         $batchPromise->then(function ($values) use ($keys, $batch) {
-
-            $index = 0;
-
-            foreach ($batch as $queueItem) {
+            foreach ($batch as $index => $queueItem) {
                 $value = $values[$index];
-                $queueItem['resolve']($value);
-
-                $index++;
+                if($value instanceof \Exception) {
+                    $queueItem['reject']($value);
+                } else {
+                    $queueItem['resolve']($value);
+                }
             }
-
+        })->otherwise(function ($error) use ($batch) {
+            $this->failedDispatch($batch, $error);
         });
 
     }
@@ -211,6 +214,14 @@ class DataLoader
                 array_slice($queue, $i * $maxBatchSize, $maxBatchSize)
             );
 
+        }
+    }
+
+    private function failedDispatch($batch,  \Exception $error)
+    {
+        foreach ($batch as $index => $queueItem) {
+            $this->clear($queueItem['key']);
+            $queueItem['reject']($error);
         }
     }
 }

@@ -26,7 +26,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->eventLoop = Factory::create();
-
+        $this->loadCalls = [];
         parent::setUp();
     }
 
@@ -328,7 +328,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals([['B']], $this->loadCalls);
     }
-    
+
     /** @test */
     public function it_does_not_prime_keys_that_already_exist()
     {
@@ -419,6 +419,185 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([['B']], $this->loadCalls);
     }
 
+    /** @test */
+    public function it_resolves_error_to_indicate_failure()
+    {
+        $evenLoader = $this->createEvenLoader();
+
+        $promise1 = $evenLoader->load(1);
+        $exception = null;
+        $promise1->then(null, function ($error) use(&$exception) {
+            $exception = $error;
+        });
+
+        $this->eventLoop->run();
+
+        /** @var \Exception $exception */
+        $this->assertInstanceOf(\Exception::class, $exception);
+        $this->assertEquals('Odd: 1', $exception->getMessage());
+        $this->assertEquals($this->loadCalls, [ [1] ]);
+
+        $promise2 = $evenLoader->load(2);
+        $result = null;
+        $promise2->then(function ($number) use (&$result) {
+            $result = $number;
+        });
+
+        $this->eventLoop->run();
+
+        $this->assertEquals(2, $result);
+
+        $this->assertEquals( [ [1], [2] ], $this->loadCalls);
+    }
+
+    /** @test */
+    public function it_can_represent_failures_and_successes_simultaneously()
+    {
+        $evenLoader = $this->createEvenLoader();
+
+        $promise1 = $evenLoader->load(1);
+        $exception = null;
+        $promise1->then(null, function ($error) use (&$exception) {
+            $exception = $error;
+        });
+
+        $promise2 = $evenLoader->load(2);
+        $result = null;
+        $promise2->then(function ($number) use (&$result) {
+            $result = $number;
+        });
+
+        $this->eventLoop->run();
+
+        /** @var \Exception $exception */
+        $this->assertInstanceOf(\Exception::class, $exception);
+        $this->assertEquals('Odd: 1', $exception->getMessage());
+
+        $this->assertEquals(2, $result);
+
+        $this->assertEquals( [ [1, 2] ], $this->loadCalls);
+    }
+
+    /** @test */
+    public function it_caches_failed_fetches()
+    {
+        $exceptionLoader = $this->createExceptionLoader();
+
+        $exceptionA = null;
+        $promise = $exceptionLoader->load(1);
+        $promise->then(null,function ($error) use (&$exceptionA) {
+            $exceptionA = $error;
+        });
+
+        $this->eventLoop->run();
+
+        /** @var \Exception $exceptionA */
+        $this->assertInstanceOf(\Exception::class, $exceptionA);
+        $this->assertEquals('Error: 1', $exceptionA->getMessage());
+
+        $exceptionB = null;
+        $promise = $exceptionLoader->load(1);
+        $promise->then(null, function ($error) use (&$exceptionB) {
+            $exceptionB = $error;
+        });
+
+        $this->eventLoop->run();
+
+        /** @var \Exception $exceptionB */
+        $this->assertInstanceOf(\Exception::class, $exceptionB);
+        $this->assertEquals('Error: 1', $exceptionB->getMessage());
+
+        $this->assertEquals([ [1] ], $this->loadCalls);
+    }
+
+    /** @test */
+    public function it_handles_priming_the_cache_with_an_exception()
+    {
+        $identityLoader = $this->createIdentityLoader();
+        $identityLoader->prime(1, new \Exception('Error: 1'));
+
+        $exceptionA = null;
+        $promise = $identityLoader->load(1);
+        $promise->then(null, function ($error) use (&$exceptionA) {
+            $exceptionA = $error;
+        });
+
+        $this->eventLoop->run();
+
+        /** @var \Exception $exceptionA */
+        $this->assertInstanceOf(\Exception::class, $exceptionA);
+        $this->assertEquals('Error: 1', $exceptionA->getMessage());
+
+        $this->assertEquals([], $this->loadCalls);
+    }
+
+    /** @test */
+    public function it_can_clear_values_from_cache_after_errors()
+    {
+        $exceptionLoader = $this->createExceptionLoader();
+
+        $exceptionA = null;
+        $promise = $exceptionLoader->load(1);
+        $promise->then(null, function ($error) use (&$exceptionA, $exceptionLoader) {
+            $exceptionLoader->clear(1);
+            $exceptionA = $error;
+        });
+
+        $this->eventLoop->run();
+
+        /** @var \Exception $exceptionA */
+        $this->assertInstanceOf(\Exception::class, $exceptionA);
+        $this->assertEquals('Error: 1', $exceptionA->getMessage());
+
+        $exceptionB = null;
+        $promise = $exceptionLoader->load(1);
+        $promise->then(null, function ($error) use (&$exceptionB, $exceptionLoader) {
+            $exceptionLoader->clear(1);
+            $exceptionB = $error;
+        });
+
+        $this->eventLoop->run();
+
+        /** @var \Exception $exceptionB */
+        $this->assertInstanceOf(\Exception::class, $exceptionB);
+        $this->assertEquals('Error: 1', $exceptionB->getMessage());
+
+        $this->assertEquals([1], [1], $this->loadCalls);
+    }
+
+    /** @test */
+    public function it_propagates_error_to_all_loads()
+    {
+        $failLoader = new DataLoader(function ($keys) {
+            $this->loadCalls[] = $keys;
+            return \React\Promise\reject(new \Exception('I am a terrible loader'));
+        }, $this->eventLoop);
+
+        $promise1 = $failLoader->load(1);
+        $promise2 = $failLoader->load(2);
+
+        $exception1 = null;
+        $promise1->then(null, function ($error) use (&$exception1) {
+            $exception1 = $error;
+        });
+
+        $exception2 = null;
+        $promise2->then(null, function ($error) use (&$exception2) {
+            $exception2 = $error;
+        });
+
+        $this->eventLoop->run();
+
+        /** @var \Exception $exception1 */
+        $this->assertInstanceOf(\Exception::class, $exception1);
+        $this->assertEquals('I am a terrible loader', $exception1->getMessage());
+
+        /** @var \Exception $exception2 */
+        $this->assertInstanceOf(\Exception::class, $exception2);
+        $this->assertEquals('I am a terrible loader', $exception2->getMessage());
+
+        $this->assertEquals([ [1, 2] ], $this->loadCalls);
+    }
 
     /**
      * Creates a simple DataLoader which returns the given keys as values.
@@ -429,8 +608,6 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
      */
     private function createIdentityLoader($options = [])
     {
-        $this->loadCalls = [];
-
         $identityLoader = new DataLoader(function ($keys) {
             $this->loadCalls[] = $keys;
 
@@ -449,8 +626,6 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
      */
     private function createEvenLoader($options = [])
     {
-        $this->loadCalls = [];
-
         $evenLoader = new DataLoader(function ($keys) {
             $this->loadCalls[] = $keys;
 
@@ -459,12 +634,29 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
                     return $key;
                 }
 
-                throw new \Exception("Odd: {$key}");
+                return new \Exception("Odd: {$key}");
             }, $keys));
         }, $this->eventLoop,  $options);
 
         return $evenLoader;
     }
 
+    /**
+     * Creates a DataLoader which transforms the given keys into Exceptions.
+     *
+     * @return DataLoader
+     */
+    private function createExceptionLoader()
+    {
+        $exceptionLoader = new DataLoader(function ($keys) {
+            $this->loadCalls[] = $keys;
 
+            return \React\Promise\resolve(array_map(function ($key) {
+                return new \Exception("Error: {$key}");
+            }, $keys));
+
+        }, $this->eventLoop);
+
+        return $exceptionLoader;
+    }
 }
