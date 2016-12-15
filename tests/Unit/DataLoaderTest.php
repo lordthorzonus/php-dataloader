@@ -5,6 +5,7 @@ namespace leinonen\DataLoader\Tests\Unit;
 
 
 use leinonen\DataLoader\DataLoader;
+use leinonen\DataLoader\DataLoaderOptions;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
@@ -106,7 +107,8 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_batches_multiple_requests_with_max_batch_sizes()
     {
-        $identityLoader = $this->createIdentityLoader(['maxBatchSize' => 2]);
+        $options = new DataLoaderOptions(true, 2);
+        $identityLoader = $this->createIdentityLoader($options);
 
         $promise1 = $identityLoader->load(1);
         $promise2 = $identityLoader->load(2);
@@ -728,7 +730,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
      *
      * @return DataLoader
      */
-    private function createIdentityLoader($options = [])
+    private function createIdentityLoader($options = null)
     {
         $identityLoader = new DataLoader(function ($keys) {
             $this->loadCalls[] = $keys;
@@ -746,7 +748,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
      *
      * @return DataLoader
      */
-    private function createEvenLoader($options = [])
+    private function createEvenLoader($options = null)
     {
         $evenLoader = new DataLoader(function ($keys) {
             $this->loadCalls[] = $keys;

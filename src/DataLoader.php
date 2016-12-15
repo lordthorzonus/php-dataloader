@@ -15,7 +15,7 @@ class DataLoader
     private $batchLoadFunction;
 
     /**
-     * @var array
+     * @var DataLoaderOptions
      */
     private $options;
 
@@ -32,16 +32,21 @@ class DataLoader
     /**
      * Initiates a new DataLoader.
      *
-     * @param callable $batchLoadFunction
+     * @param callable $batchLoadFunction The function which will be called for the batch loading.
      * @param LoopInterface $loop
-     * @param array $options
+     * @param null|DataLoaderOptions $options
+     * @param null|CacheMapInterface $cacheMap
      */
-    public function __construct(callable $batchLoadFunction, LoopInterface $loop, $options = [])
-    {
+    public function __construct(
+        callable $batchLoadFunction,
+        LoopInterface $loop,
+        DataLoaderOptions $options = null,
+        CacheMapInterface $cacheMap = null
+    ) {
         $this->batchLoadFunction = $batchLoadFunction;
-        $this->options = $options;
         $this->eventLoop = $loop;
-        $this->promiseCache = new CacheMap();
+        $this->options = empty($options) ? new DataLoaderOptions() : $options;
+        $this->promiseCache = empty($cacheMap) ? new CacheMap() : $cacheMap;
     }
 
     /**
@@ -169,7 +174,7 @@ class DataLoader
         $queue = $this->promiseQueue;
         $this->promiseQueue = [];
 
-        $maxBatchSize = isset($this->options['maxBatchSize']) ? $this->options['maxBatchSize'] : null;
+        $maxBatchSize = $this->options->getMaxBatchSize();
 
         if ($maxBatchSize && $maxBatchSize > 0 && $maxBatchSize < count($queue)) {
             $this->dispatchQueueInMultipleBatches($queue, $maxBatchSize);
