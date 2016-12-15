@@ -54,24 +54,28 @@ class DataLoader
     {
         $cacheKey = $key;
 
-        if(isset($this->promiseCache[$cacheKey])) {
+        if (isset($this->promiseCache[$cacheKey])) {
             return $this->promiseCache[$cacheKey];
         }
 
-        $promise = new Promise(function (callable $resolve, callable $reject) use ($key) {
+        $promise = new Promise(
+            function (callable $resolve, callable $reject) use ($key) {
 
-            $this->promiseQueue[] = [
-                'key' => $key,
-                'resolve' => $resolve,
-                'reject' => $reject,
-            ];
+                $this->promiseQueue[] = [
+                    'key' => $key,
+                    'resolve' => $resolve,
+                    'reject' => $reject,
+                ];
 
-            if(count($this->promiseQueue) === 1) {
-                $this->eventLoop->nextTick(function() {
-                    $this->dispatchQueue();
-                });
+                if (count($this->promiseQueue) === 1) {
+                    $this->eventLoop->nextTick(
+                        function () {
+                            $this->dispatchQueue();
+                        }
+                    );
+                }
             }
-        });
+        );
 
         $this->promiseCache[$cacheKey] = $promise;
 
@@ -94,9 +98,14 @@ class DataLoader
      */
     public function loadMany(array $keys)
     {
-        return \React\Promise\all(array_map(function ($key) {
-            return $this->load($key);
-        }, $keys));
+        return \React\Promise\all(
+            array_map(
+                function ($key) {
+                    return $this->load($key);
+                },
+                $keys
+            )
+        );
     }
 
     /**
@@ -110,7 +119,7 @@ class DataLoader
     {
         $cacheKey = $key;
 
-        if(isset($this->promiseCache[$cacheKey])) {
+        if (isset($this->promiseCache[$cacheKey])) {
             unset($this->promiseCache[$cacheKey]);
         }
 
@@ -142,9 +151,9 @@ class DataLoader
     {
         $cacheKey = $key;
 
-        if(!isset($this->promiseCache[$cacheKey])) {
+        if (!isset($this->promiseCache[$cacheKey])) {
             // Cache a rejected promise if the value is an Exception, in order to match
-            // the behavior of load(key).
+            // the behavior of load($key).
             $promise = $value instanceof \Exception ? \React\Promise\reject($value) : \React\Promise\resolve($value);
 
             $this->promiseCache[$cacheKey] = $promise;
@@ -163,7 +172,7 @@ class DataLoader
 
         $maxBatchSize = isset($this->options['maxBatchSize']) ? $this->options['maxBatchSize'] : null;
 
-        if($maxBatchSize && $maxBatchSize > 0 && $maxBatchSize < count($queue)) {
+        if ($maxBatchSize && $maxBatchSize > 0 && $maxBatchSize < count($queue)) {
             $this->dispatchQueueInMultipleBatches($queue, $maxBatchSize);
         } else {
             $this->dispatchQueueBatch($queue);
@@ -183,18 +192,22 @@ class DataLoader
         /** @var Promise $batchPromise */
         $batchPromise = $batchLoadFunction($keys);
 
-        $batchPromise->then(function ($values) use ($keys, $batch) {
-            foreach ($batch as $index => $queueItem) {
-                $value = $values[$index];
-                if($value instanceof \Exception) {
-                    $queueItem['reject']($value);
-                } else {
-                    $queueItem['resolve']($value);
+        $batchPromise->then(
+            function ($values) use ($batch) {
+                // Handle the batch by resolving the promises and rejecting ones that return Exceptions.
+                foreach ($batch as $index => $queueItem) {
+                    $value = $values[$index];
+                    if ($value instanceof \Exception) {
+                        $queueItem['reject']($value);
+                    } else {
+                        $queueItem['resolve']($value);
+                    }
                 }
+            },
+            function ($error) use ($batch) {
+                $this->handleFailedDispatch($batch, $error);
             }
-        })->otherwise(function ($error) use ($batch) {
-            $this->failedDispatch($batch, $error);
-        });
+        );
 
     }
 
@@ -217,7 +230,13 @@ class DataLoader
         }
     }
 
-    private function failedDispatch($batch,  \Exception $error)
+    /**
+     * Handles the failed batch dispatch.
+     *
+     * @param $batch
+     * @param \Exception $error
+     */
+    private function handleFailedDispatch($batch, \Exception $error)
     {
         foreach ($batch as $index => $queueItem) {
             $this->clear($queueItem['key']);
