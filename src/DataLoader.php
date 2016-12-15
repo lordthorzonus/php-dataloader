@@ -25,9 +25,9 @@ class DataLoader
     private $promiseQueue = [];
 
     /**
-     * @var array
+     * @var CacheMapInterface
      */
-    private $promiseCache = [];
+    private $promiseCache;
 
     /**
      * Initiates a new DataLoader.
@@ -41,6 +41,7 @@ class DataLoader
         $this->batchLoadFunction = $batchLoadFunction;
         $this->options = $options;
         $this->eventLoop = $loop;
+        $this->promiseCache = new CacheMap();
     }
 
     /**
@@ -54,8 +55,8 @@ class DataLoader
     {
         $cacheKey = $key;
 
-        if (isset($this->promiseCache[$cacheKey])) {
-            return $this->promiseCache[$cacheKey];
+        if ($this->promiseCache->get($cacheKey)) {
+            return $this->promiseCache->get($cacheKey);
         }
 
         $promise = new Promise(
@@ -77,7 +78,7 @@ class DataLoader
             }
         );
 
-        $this->promiseCache[$cacheKey] = $promise;
+        $this->promiseCache->set($cacheKey, $promise);
 
         return $promise;
     }
@@ -119,9 +120,7 @@ class DataLoader
     {
         $cacheKey = $key;
 
-        if (isset($this->promiseCache[$cacheKey])) {
-            unset($this->promiseCache[$cacheKey]);
-        }
+        $this->promiseCache->delete($cacheKey);
 
         return $this;
     }
@@ -133,7 +132,7 @@ class DataLoader
      */
     public function clearAll()
     {
-        $this->promiseCache = [];
+        $this->promiseCache->clear();
 
         return $this;
     }
@@ -151,12 +150,12 @@ class DataLoader
     {
         $cacheKey = $key;
 
-        if (!isset($this->promiseCache[$cacheKey])) {
+        if (! $this->promiseCache->get($cacheKey)) {
             // Cache a rejected promise if the value is an Exception, in order to match
             // the behavior of load($key).
             $promise = $value instanceof \Exception ? \React\Promise\reject($value) : \React\Promise\resolve($value);
 
-            $this->promiseCache[$cacheKey] = $promise;
+            $this->promiseCache->set($cacheKey, $promise);
         }
 
         return $this;

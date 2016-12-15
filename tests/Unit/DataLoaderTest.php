@@ -507,7 +507,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(\Exception::class, $exceptionB);
         $this->assertEquals('Error: 1', $exceptionB->getMessage());
 
-        $this->assertEquals([ [1] ], $this->loadCalls);
+        $this->assertEquals([[1]], $this->loadCalls);
     }
 
     /** @test */
@@ -596,7 +596,129 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(\Exception::class, $exception2);
         $this->assertEquals('I am a terrible loader', $exception2->getMessage());
 
-        $this->assertEquals([ [1, 2] ], $this->loadCalls);
+        $this->assertEquals([[1, 2]], $this->loadCalls);
+    }
+
+    /** @test */
+    public function it_accepts_objects_as_keys()
+    {
+        $identityLoader = $this->createIdentityLoader();
+        $keyA = new \stdClass();
+        $keyB = new \stdClass();
+        $valueA = null;
+        $valueB = null;
+
+        \React\Promise\all([
+            $identityLoader->load($keyA),
+            $identityLoader->load($keyB)
+        ])->then(function ($returnedValues) use (&$valueA, &$valueB) {
+            $valueA = $returnedValues[0];
+            $valueB = $returnedValues[1];
+        });
+
+        $this->eventLoop->run();
+
+        $this->assertEquals($keyA, $valueA);
+        $this->assertEquals($keyB, $valueB);
+        $this->assertCount(1, $this->loadCalls);
+        $this->assertCount(2, $this->loadCalls[0]);
+        $this->assertEquals($keyA, $this->loadCalls[0][0]);
+        $this->assertEquals($keyB, $this->loadCalls[0][1]);
+
+        // Caching
+        $identityLoader->clear($keyA);
+
+        $valueA = null;
+        $valueB = null;
+
+        \React\Promise\all([
+            $identityLoader->load($keyA),
+            $identityLoader->load($keyB)
+        ])->then(function ($returnedValues) use (&$valueA, &$valueB) {
+            $valueA = $returnedValues[0];
+            $valueB = $returnedValues[1];
+        });
+
+        $this->eventLoop->run();
+
+        $this->assertCount(2, $this->loadCalls);
+        $this->assertCount(1, $this->loadCalls[1]);
+        $this->assertEquals($keyA, $this->loadCalls[1][0]);
+    }
+
+    /** @test */
+    public function it_batches_loads_occurring_within_promises()
+    {
+        $identityLoader = $this->createIdentityLoader();
+
+        \React\Promise\all([
+            $identityLoader->load('A'),
+            \React\Promise\resolve()->then(function () use ($identityLoader) {
+                \React\Promise\resolve()->then(function () use ($identityLoader) {
+                    $identityLoader->load('B');
+                    \React\Promise\resolve()->then(function () use ($identityLoader) {
+                       $identityLoader->load('C');
+                       \React\Promise\resolve()->then(function () use ($identityLoader) {
+                           $identityLoader->load('D');
+                       });
+                    });
+                });
+            })
+        ]);
+
+        $this->eventLoop->run();
+
+        $this->assertEquals([['A', 'B', 'C', 'D']], $this->loadCalls);
+    }
+
+    /** @test */
+    public function it_can_call_a_loader_from_a_loader()
+    {
+        $deepLoadCalls = [];
+        $deepLoader = new DataLoader(function ($keys) use (&$deepLoadCalls) {
+            $deepLoadCalls[] = $keys;
+            return \React\Promise\resolve($keys);
+        }, $this->eventLoop);
+
+        $aLoadCalls = [];
+        $aLoader = new DataLoader(function ($keys) use (&$aLoadCalls, $deepLoader) {
+            $aLoadCalls[] = $keys;
+            return $deepLoader->load($keys);
+        }, $this->eventLoop);
+
+        $bLoadCalls = [];
+        $bLoader = new DataLoader(function ($keys) use (&$bLoadCalls, $deepLoader) {
+            $bLoadCalls[] = $keys;
+            return $deepLoader->load($keys);
+        }, $this->eventLoop);
+
+        $a1 = null;
+        $a2 = null;
+        $b1 = null;
+        $b2 = null;
+
+        \React\Promise\all([
+            $aLoader->load('A1'),
+            $bLoader->load('B1'),
+            $aLoader->load('A2'),
+            $bLoader->load('B2'),
+        ])->then(function ($returnedValues) use (&$a1, &$a2, &$b1, &$b2) {
+            $a1 = $returnedValues[0];
+            $b1 = $returnedValues[1];
+            $a2 = $returnedValues[2];
+            $b2 = $returnedValues[3];
+        });
+
+        $this->eventLoop->run();
+
+        $this->assertEquals('A1', $a1);
+        $this->assertEquals('A2', $a2);
+        $this->assertEquals('B1', $b1);
+        $this->assertEquals('B2', $b2);
+
+        $this->assertEquals([['A1', 'A2']], $aLoadCalls);
+        $this->assertEquals([['B1', 'B2']], $bLoadCalls);
+        $this->assertEquals([[['A1', 'A2'], ['B1', 'B2']]], $deepLoadCalls);
     }
 
     /**
@@ -612,7 +734,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
             $this->loadCalls[] = $keys;
 
             return \React\Promise\resolve($keys);
-        }, $this->eventLoop,  $options);
+        }, $this->eventLoop, $options);
 
         return $identityLoader;
     }
@@ -636,7 +758,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
                 return new \Exception("Odd: {$key}");
             }, $keys));
-        }, $this->eventLoop,  $options);
+        }, $this->eventLoop, $options);
 
         return $evenLoader;
     }
