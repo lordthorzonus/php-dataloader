@@ -162,7 +162,7 @@ class DataLoader
 
     /**
      * Schedules the dispatch to happen on the next tick of the EventLoop
-     * If not batching schedule the dispatch immediately.
+     * If batching is disabled, schedule the dispatch immediately.
      *
      * @return void
      */
