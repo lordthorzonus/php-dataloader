@@ -59,9 +59,10 @@ class DataLoader
     public function load($key)
     {
         $cacheKey = $key;
-
-        if ($this->promiseCache->get($cacheKey)) {
-            return $this->promiseCache->get($cacheKey);
+        if($this->options->shouldCache()) {
+            if ($this->promiseCache->get($cacheKey)) {
+                return $this->promiseCache->get($cacheKey);
+            }
         }
 
         $promise = new Promise(
@@ -74,16 +75,14 @@ class DataLoader
                 ];
 
                 if (count($this->promiseQueue) === 1) {
-                    $this->eventLoop->nextTick(
-                        function () {
-                            $this->dispatchQueue();
-                        }
-                    );
+                    $this->scheduleDispatch();
                 }
             }
         );
 
-        $this->promiseCache->set($cacheKey, $promise);
+        if($this->options->shouldCache()) {
+            $this->promiseCache->set($cacheKey, $promise);
+        }
 
         return $promise;
     }
@@ -167,7 +166,30 @@ class DataLoader
     }
 
     /**
+     * Schedules the dispatch to happen on the next tick of the EventLoop
+     * If not batching schedule the dispatch immediately.
+     *
+     * @return void
+     */
+    private function scheduleDispatch()
+    {
+        if($this->options->shouldBatch()) {
+            $this->eventLoop->nextTick(
+                function () {
+                    $this->dispatchQueue();
+                }
+            );
+
+            return;
+        }
+
+        $this->dispatchQueue();
+    }
+
+    /**
      * Resets and dispatches the DataLoaders queue.
+     *
+     * @return void
      */
     private function dispatchQueue()
     {
@@ -187,6 +209,8 @@ class DataLoader
      * Dispatches a batch of a queue. The given batch can also be the whole queue.
      *
      * @param $batch
+     *
+     * @return void
      */
     private function dispatchQueueBatch($batch)
     {
@@ -212,7 +236,6 @@ class DataLoader
                 $this->handleFailedDispatch($batch, $error);
             }
         );
-
     }
 
     /**
@@ -220,6 +243,8 @@ class DataLoader
      *
      * @param $queue
      * @param int $maxBatchSize
+     *
+     * @return void
      */
     private function dispatchQueueInMultipleBatches($queue, $maxBatchSize)
     {
@@ -239,10 +264,13 @@ class DataLoader
      *
      * @param $batch
      * @param \Exception $error
+     *
+     * @return void
      */
     private function handleFailedDispatch($batch, \Exception $error)
     {
         foreach ($batch as $index => $queueItem) {
+            // We don't want to cache individual loads if the entire batch dispatch fails.
             $this->clear($queueItem['key']);
             $queueItem['reject']($error);
         }
