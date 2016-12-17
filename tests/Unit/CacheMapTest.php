@@ -120,4 +120,11 @@ class CacheMapTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $cacheMap);
         $this->assertEquals('b', $cacheMap->get('a'));
     }
+
+    /** @test */
+    public function deleting_by_a_non_existing_key_should_not_throw_an_exception()
+    {
+        $cacheMap = new CacheMap();
+        $this->assertEquals(null, $cacheMap->delete('I-do-not-exist'));
+    }
 }
