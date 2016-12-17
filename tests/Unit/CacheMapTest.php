@@ -95,4 +95,29 @@ class CacheMapTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($cacheMap->get($keyC));
         $this->assertFalse($cacheMap->get($keyD));
     }
+
+    /** @test */
+    public function it_implements_the_countable_interface_for_counting_the_cache_entries()
+    {
+        $cacheMap = new CacheMap();
+        $cacheMap->set('a', 'a');
+        $cacheMap->set('b', 'b');
+
+        $this->assertCount(2, $cacheMap);
+        $this->assertEquals(2, $cacheMap->count());
+    }
+
+    /** @test */
+    public function set_replaces_the_value_for_existing_cache_entry_like_it_should()
+    {
+        $cacheMap = new CacheMap();
+        $cacheMap->set('a', 'a');
+
+        $this->assertCount(1, $cacheMap);
+        $this->assertEquals('a', $cacheMap->get('a'));
+
+        $cacheMap->set('a', 'b');
+        $this->assertCount(1, $cacheMap);
+        $this->assertEquals('b', $cacheMap->get('a'));
+    }
 }

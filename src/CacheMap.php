@@ -4,7 +4,7 @@
 namespace leinonen\DataLoader;
 
 
-class CacheMap implements CacheMapInterface
+class CacheMap implements CacheMapInterface, \Countable
 {
     private $cache = [];
 
@@ -27,10 +27,18 @@ class CacheMap implements CacheMapInterface
      */
     public function set($key, $value)
     {
-        $this->cache[] = [
+        $cacheEntry = [
             'key' => $key,
             'value' => $value,
         ];
+        $index = $this->findCacheIndexByKey($key);
+
+        if($index !== null) {
+            $this->cache[$index] = $cacheEntry;
+            return;
+        }
+
+        $this->cache[] = $cacheEntry;
     }
 
     /**
@@ -48,6 +56,14 @@ class CacheMap implements CacheMapInterface
     public function clear()
     {
         $this->cache = [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count()
+    {
+        return count ($this->cache);
     }
 
     /**
