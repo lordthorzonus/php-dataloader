@@ -107,7 +107,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_batches_multiple_requests_with_max_batch_sizes()
     {
-        $options = new DataLoaderOptions(true, 2);
+        $options = new DataLoaderOptions(2);
         $identityLoader = $this->createIdentityLoader($options);
 
         $promise1 = $identityLoader->load(1);
@@ -651,7 +651,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_may_disable_batching()
     {
-        $options = new DataLoaderOptions(false);
+        $options = new DataLoaderOptions(null, false);
         $identityLoader = $this->createIdentityLoader($options);
 
         $a = null;
@@ -674,7 +674,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_may_disable_caching()
     {
-        $options = new DataLoaderOptions(true, null, false);
+        $options = new DataLoaderOptions(null, true, false);
         $identityLoader = $this->createIdentityLoader($options);
 
         $a = null;

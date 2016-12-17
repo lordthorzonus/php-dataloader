@@ -22,16 +22,16 @@ class DataLoaderOptions
     /**
      * Initiates new DataLoaderOptions.
      *
-     * @param bool $shouldBatch
      * @param null|int $maxBatchSize
+     * @param bool $shouldBatch
      * @param bool $shouldCache
      */
     public function __construct(
-        $shouldBatch = true,
         $maxBatchSize = null,
+        $shouldBatch = true,
         $shouldCache = true
     ) {
-        $this->validateOptions($shouldBatch, $maxBatchSize, $shouldCache);
+        $this->validateOptions($maxBatchSize, $shouldBatch, $shouldCache);
         $this->shouldBatch = $shouldBatch;
         $this->maxBatchSize = $maxBatchSize;
         $this->shouldCache = $shouldCache;
@@ -64,11 +64,11 @@ class DataLoaderOptions
     /**
      * Validates the options.
      *
-     * @param bool $shouldBatch
      * @param null|int $maxBatchSize
+     * @param bool $shouldBatch
      * @param bool $shouldCache
      */
-    private function validateOptions($shouldBatch, $maxBatchSize, $shouldCache)
+    private function validateOptions($maxBatchSize, $shouldBatch, $shouldCache)
     {
         if (!is_bool($shouldBatch)) {
             throw new \InvalidArgumentException('Expected argument $shouldBatch to be a boolean');

@@ -17,12 +17,12 @@ class DataLoaderOptionsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, $options->shouldBatch());
         $this->assertEquals(true, $options->shouldCache());
 
-        $options = new DataLoaderOptions(false, 2, false);
+        $options = new DataLoaderOptions(2, false, false);
         $this->assertEquals(2, $options->getMaxBatchSize());
         $this->assertEquals(false, $options->shouldBatch());
         $this->assertEquals(false, $options->shouldCache());
 
-        $options = new DataLoaderOptions(false, null, true);
+        $options = new DataLoaderOptions(null, false, true);
         $this->assertEquals(null, $options->getMaxBatchSize());
         $this->assertEquals(false, $options->shouldBatch());
         $this->assertEquals(true, $options->shouldCache());
@@ -35,7 +35,7 @@ class DataLoaderOptionsTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_throw_an_exception_if_shouldBatch_is_not_a_boolean()
     {
-        new DataLoaderOptions(1);
+        new DataLoaderOptions(null, 1);
     }
 
     /**
@@ -45,7 +45,7 @@ class DataLoaderOptionsTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_throw_an_exception_if_shouldCache_is_not_a_boolean()
     {
-        new DataLoaderOptions(true, 2, 2);
+        new DataLoaderOptions(2, true, 2);
     }
 
     /**
