@@ -10,10 +10,12 @@ class DataLoaderOptions
      * @var bool
      */
     private $shouldBatch;
+
     /**
      * @var null
      */
     private $maxBatchSize;
+
     /**
      * @var bool
      */
@@ -38,7 +40,7 @@ class DataLoaderOptions
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function shouldBatch()
     {
@@ -54,7 +56,7 @@ class DataLoaderOptions
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function shouldCache()
     {

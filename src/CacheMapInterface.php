@@ -34,6 +34,8 @@ interface CacheMapInterface
 
     /**
      * Clears the cache map.
+     *
+     * @return void
      */
     public function clear();
 }

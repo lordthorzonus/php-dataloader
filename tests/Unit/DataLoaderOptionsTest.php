@@ -51,7 +51,7 @@ class DataLoaderOptionsTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected argument $maxBatchSize to be null or a integer
+     * @expectedExceptionMessage Expected argument $maxBatchSize to be null or an integer
      */
     public function it_should_throw_an_exception_if_maxBatchSize_is_not_null_or_an_integer()
     {
