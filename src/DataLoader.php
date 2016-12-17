@@ -231,6 +231,15 @@ class DataLoader
 
         $batchPromise->then(
             function ($values) use ($batch) {
+
+                if(!is_array($values)) {
+                    $this->handleFailedDispatch($batch, new \RuntimeException(
+                        DataLoader::class . ' must be constructed with a function which accepts ' .
+                        'an array of keys and returns a Promise which resolves to an array of values ' .
+                        sprintf('not return a Promise: %s.', gettype($values))
+                    ));
+                }
+
                 // Handle the batch by resolving the promises and rejecting ones that return Exceptions.
                 foreach ($batch as $index => $queueItem) {
                     $value = $values[$index];
