@@ -58,10 +58,9 @@ class DataLoader
      */
     public function load($key)
     {
-        $cacheKey = $key;
         if($this->options->shouldCache()) {
-            if ($this->promiseCache->get($cacheKey)) {
-                return $this->promiseCache->get($cacheKey);
+            if ($this->promiseCache->get($key)) {
+                return $this->promiseCache->get($key);
             }
         }
 
@@ -81,7 +80,7 @@ class DataLoader
         );
 
         if($this->options->shouldCache()) {
-            $this->promiseCache->set($cacheKey, $promise);
+            $this->promiseCache->set($key, $promise);
         }
 
         return $promise;
@@ -122,9 +121,7 @@ class DataLoader
      */
     public function clear($key)
     {
-        $cacheKey = $key;
-
-        $this->promiseCache->delete($cacheKey);
+        $this->promiseCache->delete($key);
 
         return $this;
     }
@@ -152,14 +149,12 @@ class DataLoader
      */
     public function prime($key, $value)
     {
-        $cacheKey = $key;
-
-        if (! $this->promiseCache->get($cacheKey)) {
+        if (! $this->promiseCache->get($key)) {
             // Cache a rejected promise if the value is an Exception, in order to match
             // the behavior of load($key).
             $promise = $value instanceof \Exception ? \React\Promise\reject($value) : \React\Promise\resolve($value);
 
-            $this->promiseCache->set($cacheKey, $promise);
+            $this->promiseCache->set($key, $promise);
         }
 
         return $this;
