@@ -230,13 +230,21 @@ class DataLoader
         }
 
         $batchPromise->then(
-            function ($values) use ($batch) {
-
-                if(!is_array($values)) {
+            function ($values) use ($batch, $keys) {
+                if (!is_array($values)) {
                     $this->handleFailedDispatch($batch, new \RuntimeException(
                         DataLoader::class . ' must be constructed with a function which accepts ' .
                         'an array of keys and returns a Promise which resolves to an array of values ' .
                         sprintf('not return a Promise: %s.', gettype($values))
+                    ));
+                }
+
+                if (count($values) !== count($keys)) {
+                    $this->handleFailedDispatch($batch, new \RuntimeException(
+                       DataLoader::class . ' must be constructed with a function which accepts ' .
+                       'an array of keys and returns a Promise which resolves to an array of values, but ' .
+                       'the function did not return a Promise of an array of the same length as the array of keys.' .
+                       sprintf("\n Keys: %s\n Values: %s\n", count($keys), count($values))
                     ));
                 }
 

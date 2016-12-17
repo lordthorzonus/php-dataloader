@@ -73,7 +73,6 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * an array of keys and returns a Promise which resolves to an array of values not return a Promise: null.
      */
     public function batch_function_must_return_a_promise_of_an_array_not_null()
     {
@@ -91,6 +90,32 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
 
         $expectedExceptionMessage = 'leinonen\DataLoader\DataLoader must be constructed with a function which accepts an array of keys '
             . 'and returns a Promise which resolves to an array of values not return a Promise: NULL.';
+        $this->assertInstanceOf(\RuntimeException::class, $exception);
+        $this->assertEquals($expectedExceptionMessage, $exception->getMessage());
+    }
+
+    /**
+     * @test
+     */
+    public function batch_function_must_promise_an_array_of_correct_length()
+    {
+        $emptyArrayLoader = new DataLoader(function ($keys) {
+            return \React\Promise\resolve([]);
+        }, $this->eventLoop);
+
+        $exception = null;
+
+        $emptyArrayLoader->load(1)->then(null, function ($value) use(&$exception) {
+            $exception = $value;
+        });
+
+        $this->eventLoop->run();
+
+        $expectedExceptionMessage = 'leinonen\DataLoader\DataLoader must be constructed with a function which accepts an array of keys '
+            . 'and returns a Promise which resolves to an array of values, '
+            . 'but the function did not return a Promise of an array of the same length as the array of keys.'
+            . "\n Keys: 1\n Values: 0\n";
+
         $this->assertInstanceOf(\RuntimeException::class, $exception);
         $this->assertEquals($expectedExceptionMessage, $exception->getMessage());
     }
