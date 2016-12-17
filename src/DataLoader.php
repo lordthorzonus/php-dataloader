@@ -33,6 +33,7 @@ class DataLoader
      * Initiates a new DataLoader.
      *
      * @param callable $batchLoadFunction The function which will be called for the batch loading.
+     * It must Accepts an array of keys and returns a Promise which resolves to an array of values.
      * @param LoopInterface $loop
      * @param null|DataLoaderOptions $options
      * @param null|CacheMapInterface $cacheMap
@@ -52,12 +53,17 @@ class DataLoader
     /**
      * Returns a Promise for the value represented by the given key.
      *
-     * @param int|string $key
+     * @param mixed $key
      *
      * @return Promise
+     * @throws \InvalidArgumentException
      */
     public function load($key)
     {
+        if($key === null) {
+            throw new \InvalidArgumentException(DataLoader::class . '::load must be called with a value, but got null');
+        }
+
         if($this->options->shouldCache()) {
             if ($this->promiseCache->get($key)) {
                 return $this->promiseCache->get($key);
@@ -214,6 +220,14 @@ class DataLoader
         $batchLoadFunction = $this->batchLoadFunction;
         /** @var Promise $batchPromise */
         $batchPromise = $batchLoadFunction($keys);
+
+        if (! $batchPromise || !is_callable([$batchPromise, 'then'])) {
+            throw new \RuntimeException(
+                DataLoader::class . ' must be constructed with a function which accepts ' .
+                'an array of keys and returns a Promise which resolves to an array of values ' .
+                sprintf('not return a Promise: %s.', gettype($batchPromise))
+            );
+        }
 
         $batchPromise->then(
             function ($values) use ($batch) {
