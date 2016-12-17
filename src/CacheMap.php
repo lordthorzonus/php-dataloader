@@ -6,6 +6,9 @@ namespace leinonen\DataLoader;
 
 class CacheMap implements CacheMapInterface, \Countable
 {
+    /**
+     * @var array
+     */
     private $cache = [];
 
     /**
@@ -63,7 +66,7 @@ class CacheMap implements CacheMapInterface, \Countable
      */
     public function count()
     {
-        return count ($this->cache);
+        return count($this->cache);
     }
 
     /**

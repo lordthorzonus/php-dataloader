@@ -18,6 +18,8 @@ interface CacheMapInterface
      *
      * @param mixed $key
      * @param mixed $value
+     *
+     * @return void
      */
     public function set($key, $value);
 
@@ -25,6 +27,8 @@ interface CacheMapInterface
      * Deletes the cache entry with the given key.
      *
      * @param mixed $key
+     *
+     * @return void
      */
     public function delete($key);
 
