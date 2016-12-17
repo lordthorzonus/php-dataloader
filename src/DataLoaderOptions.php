@@ -79,7 +79,7 @@ class DataLoaderOptions
         }
 
         if ($maxBatchSize !== null && !is_int($maxBatchSize)) {
-            throw new \InvalidArgumentException('Expected argument $maxBatchSize to be null or a integer');
+            throw new \InvalidArgumentException('Expected argument $maxBatchSize to be null or an integer');
         }
     }
 }
