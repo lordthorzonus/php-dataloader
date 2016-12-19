@@ -1,14 +1,12 @@
 <?php
 
-
 namespace leinonen\DataLoader\Tests\Unit;
 
-
-use leinonen\DataLoader\CacheMap;
-use leinonen\DataLoader\DataLoader;
-use React\EventLoop\Factory;
-use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
+use React\EventLoop\Factory;
+use leinonen\DataLoader\CacheMap;
+use React\EventLoop\LoopInterface;
+use leinonen\DataLoader\DataLoader;
 
 class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,7 +59,6 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
     {
         $badLoader = new DataLoader(
             function ($keys) {
-                return null;
             }, $this->eventLoop, new CacheMap()
         );
 
@@ -101,7 +98,7 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
         $exception = null;
 
         $badLoader->load(1)->then(null, function ($value) use (&$exception) {
-           $exception = $value;
+            $exception = $value;
         });
 
         $this->eventLoop->run();
