@@ -173,7 +173,7 @@ class DataLoader implements DataLoaderInterface
 
         $maxBatchSize = $this->options->getMaxBatchSize();
 
-        if ($maxBatchSize && $maxBatchSize > 0 && $maxBatchSize < count($queue)) {
+        if ($maxBatchSize !== null && $maxBatchSize > 0 && $maxBatchSize < count($queue)) {
             $this->dispatchQueueInMultipleBatches($queue, $maxBatchSize);
         } else {
             $this->dispatchQueueBatch($queue);

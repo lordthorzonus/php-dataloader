@@ -10,7 +10,7 @@ class DataLoaderOptions
     private $shouldBatch;
 
     /**
-     * @var null
+     * @var null|int
      */
     private $maxBatchSize;
 
