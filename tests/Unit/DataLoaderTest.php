@@ -131,6 +131,31 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
+    public function if_max_batch_size_is_set_to_0_it_still_batches_calls_normally()
+    {
+        $options = new DataLoaderOptions(0);
+        $identityLoader = $this->createIdentityLoader($options);
+
+        $promise1 = $identityLoader->load(1);
+        $promise2 = $identityLoader->load(2);
+        $promise3 = $identityLoader->load(3);
+
+        $values = [];
+
+        \React\Promise\all([$promise1, $promise2, $promise3])->then(function ($returnedValues) use (&$values) {
+            $values = $returnedValues;
+        });
+
+        $this->eventLoop->run();
+
+        $this->assertEquals(1, $values[0]);
+        $this->assertEquals(2, $values[1]);
+        $this->assertEquals(3, $values[2]);
+
+        $this->assertEquals([[1, 2, 3]], $this->loadCalls);
+    }
+
+    /** @test */
     public function it_coalesces_identical_requests()
     {
         $identityLoader = $this->createIdentityLoader();

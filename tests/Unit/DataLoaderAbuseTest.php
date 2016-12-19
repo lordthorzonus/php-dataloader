@@ -58,8 +58,7 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage leinonen\DataLoader\DataLoader must be constructed with a function which accepts
-     * an array of keys and returns a Promise which resolves to an array of values not return a Promise: null.
+     * @expectedExceptionMessage leinonen\DataLoader\DataLoader must be constructed with a function which accepts an array of keys and returns a Promise which resolves to an array of values not return a Promise: NULL.
      */
     public function batch_function_must_return_a_promise_not_null()
     {
@@ -73,14 +72,43 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage leinonen\DataLoader\DataLoader must be constructed with a function which accepts
-     * an array of keys and returns a Promise which resolves to an array of values not return a Promise: 1.
+     * @expectedExceptionMessage leinonen\DataLoader\DataLoader must be constructed with a function which accepts an array of keys and returns a Promise which resolves to an array of values not return a Promise: array.
+     */
+    public function batch_function_must_return_a_promise_not_a_array()
+    {
+        $badLoader = $this->createDataLoader(function ($keys) {
+            return $keys;
+        });
+
+        $badLoader->load(1);
+        $this->eventLoop->run();
+    }
+
+    /**
+     * @test
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage leinonen\DataLoader\DataLoader must be constructed with a function which accepts an array of keys and returns a Promise which resolves to an array of values not return a Promise: integer.
      */
     public function batch_function_must_return_a_promise_not_a_value()
     {
+        $badLoader = $this->createDataLoader(function ($keys) {
+            return 1;
+        });
+
+        $badLoader->load(1);
+        $this->eventLoop->run();
+    }
+
+    /**
+     * @test
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage leinonen\DataLoader\DataLoader must be constructed with a function which accepts an array of keys and returns a Promise which resolves to an array of values not return a Promise: object.
+     */
+    public function batch_function_must_return_a_promise_not_an_object()
+    {
         $badLoader = new DataLoader(
             function ($keys) {
-                return $keys;
+                return new \stdClass();
             }, $this->eventLoop, new CacheMap()
         );
 
