@@ -35,19 +35,19 @@ class DataLoader
      * @param callable $batchLoadFunction The function which will be called for the batch loading.
      * It must Accepts an array of keys and returns a Promise which resolves to an array of values.
      * @param LoopInterface $loop
+     * @param CacheMapInterface $cacheMap
      * @param null|DataLoaderOptions $options
-     * @param null|CacheMapInterface $cacheMap
      */
     public function __construct(
         callable $batchLoadFunction,
         LoopInterface $loop,
-        DataLoaderOptions $options = null,
-        CacheMapInterface $cacheMap = null
+        CacheMapInterface $cacheMap,
+        DataLoaderOptions $options = null
     ) {
         $this->batchLoadFunction = $batchLoadFunction;
         $this->eventLoop = $loop;
+        $this->promiseCache = $cacheMap;
         $this->options = empty($options) ? new DataLoaderOptions() : $options;
-        $this->promiseCache = empty($cacheMap) ? new CacheMap() : $cacheMap;
     }
 
     /**

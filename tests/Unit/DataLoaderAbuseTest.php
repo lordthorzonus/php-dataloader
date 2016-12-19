@@ -4,6 +4,7 @@
 namespace leinonen\DataLoader\Tests\Unit;
 
 
+use leinonen\DataLoader\CacheMap;
 use leinonen\DataLoader\DataLoader;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
@@ -58,9 +59,11 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     public function batch_function_must_return_a_promise_not_null()
     {
-        $badLoader = new DataLoader(function ($keys) {
-            return null;
-        }, $this->eventLoop);
+        $badLoader = new DataLoader(
+            function ($keys) {
+                return null;
+            }, $this->eventLoop, new CacheMap()
+        );
 
         $badLoader->load(1);
         $this->eventLoop->run();
@@ -74,9 +77,11 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     public function batch_function_must_return_a_promise_not_a_value()
     {
-        $badLoader = new DataLoader(function ($keys) {
-            return $keys;
-        }, $this->eventLoop);
+        $badLoader = new DataLoader(
+            function ($keys) {
+                return $keys;
+            }, $this->eventLoop, new CacheMap()
+        );
 
         $badLoader->load(1);
         $this->eventLoop->run();
@@ -87,13 +92,15 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     public function batch_function_must_return_a_promise_of_an_array_not_null()
     {
-        $badLoader = new DataLoader(function ($keys) {
-            return \React\Promise\resolve();
-        }, $this->eventLoop);
+        $badLoader = new DataLoader(
+            function ($keys) {
+                return \React\Promise\resolve();
+            }, $this->eventLoop, new CacheMap()
+        );
 
         $exception = null;
 
-        $badLoader->load(1)->then(null, function ($value) use(&$exception) {
+        $badLoader->load(1)->then(null, function ($value) use (&$exception) {
            $exception = $value;
         });
 
@@ -110,13 +117,15 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     public function batch_function_must_promise_an_array_of_correct_length()
     {
-        $emptyArrayLoader = new DataLoader(function ($keys) {
-            return \React\Promise\resolve([]);
-        }, $this->eventLoop);
+        $emptyArrayLoader = new DataLoader(
+            function ($keys) {
+                return \React\Promise\resolve([]);
+            }, $this->eventLoop, new CacheMap()
+        );
 
         $exception = null;
 
-        $emptyArrayLoader->load(1)->then(null, function ($value) use(&$exception) {
+        $emptyArrayLoader->load(1)->then(null, function ($value) use (&$exception) {
             $exception = $value;
         });
 
@@ -140,9 +149,11 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     private function createIdentityLoader($options = null)
     {
-        $identityLoader = new DataLoader(function ($keys) {
-            return \React\Promise\resolve($keys);
-        }, $this->eventLoop, $options);
+        $identityLoader = new DataLoader(
+            function ($keys) {
+                return \React\Promise\resolve($keys);
+            }, $this->eventLoop, new CacheMap(), $options
+        );
 
         return $identityLoader;
     }

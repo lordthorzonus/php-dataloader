@@ -4,6 +4,7 @@
 namespace leinonen\DataLoader\Tests\Unit;
 
 
+use leinonen\DataLoader\CacheMap;
 use leinonen\DataLoader\DataLoader;
 use leinonen\DataLoader\DataLoaderOptions;
 use React\EventLoop\Factory;
@@ -34,9 +35,11 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_builds_a_really_simple_data_loader()
     {
-        $identityLoader = new DataLoader(function ($keys) {
-            return \React\Promise\resolve($keys);
-        }, $this->eventLoop);
+        $identityLoader = new DataLoader(
+            function ($keys) {
+                return \React\Promise\resolve($keys);
+            }, $this->eventLoop, new CacheMap()
+        );
 
         /** @var Promise $promise1 */
         $promise1 = $identityLoader->load(1);
@@ -570,10 +573,13 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_propagates_error_to_all_loads()
     {
-        $failLoader = new DataLoader(function ($keys) {
-            $this->loadCalls[] = $keys;
-            return \React\Promise\reject(new \Exception('I am a terrible loader'));
-        }, $this->eventLoop);
+        $failLoader = new DataLoader(
+            function ($keys) {
+                $this->loadCalls[] = $keys;
+
+                return \React\Promise\reject(new \Exception('I am a terrible loader'));
+            }, $this->eventLoop, new CacheMap()
+        );
 
         $promise1 = $failLoader->load(1);
         $promise2 = $failLoader->load(2);
@@ -765,22 +771,31 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
     public function it_can_call_a_loader_from_a_loader()
     {
         $deepLoadCalls = [];
-        $deepLoader = new DataLoader(function ($keys) use (&$deepLoadCalls) {
-            $deepLoadCalls[] = $keys;
-            return \React\Promise\resolve($keys);
-        }, $this->eventLoop);
+        $deepLoader = new DataLoader(
+            function ($keys) use (&$deepLoadCalls) {
+                $deepLoadCalls[] = $keys;
+
+                return \React\Promise\resolve($keys);
+            }, $this->eventLoop, new CacheMap()
+        );
 
         $aLoadCalls = [];
-        $aLoader = new DataLoader(function ($keys) use (&$aLoadCalls, $deepLoader) {
-            $aLoadCalls[] = $keys;
-            return $deepLoader->load($keys);
-        }, $this->eventLoop);
+        $aLoader = new DataLoader(
+            function ($keys) use (&$aLoadCalls, $deepLoader) {
+                $aLoadCalls[] = $keys;
+
+                return $deepLoader->load($keys);
+            }, $this->eventLoop, new CacheMap()
+        );
 
         $bLoadCalls = [];
-        $bLoader = new DataLoader(function ($keys) use (&$bLoadCalls, $deepLoader) {
-            $bLoadCalls[] = $keys;
-            return $deepLoader->load($keys);
-        }, $this->eventLoop);
+        $bLoader = new DataLoader(
+            function ($keys) use (&$bLoadCalls, $deepLoader) {
+                $bLoadCalls[] = $keys;
+
+                return $deepLoader->load($keys);
+            }, $this->eventLoop, new CacheMap()
+        );
 
         $a1 = null;
         $a2 = null;
@@ -820,11 +835,13 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
      */
     private function createIdentityLoader($options = null)
     {
-        $identityLoader = new DataLoader(function ($keys) {
-            $this->loadCalls[] = $keys;
+        $identityLoader = new DataLoader(
+            function ($keys) {
+                $this->loadCalls[] = $keys;
 
-            return \React\Promise\resolve($keys);
-        }, $this->eventLoop, $options);
+                return \React\Promise\resolve($keys);
+            }, $this->eventLoop, new CacheMap(), $options
+        );
 
         return $identityLoader;
     }
@@ -838,17 +855,24 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
      */
     private function createEvenLoader($options = null)
     {
-        $evenLoader = new DataLoader(function ($keys) {
-            $this->loadCalls[] = $keys;
+        $evenLoader = new DataLoader(
+            function ($keys) {
+                $this->loadCalls[] = $keys;
 
-            return \React\Promise\resolve(array_map(function ($key){
-                if ($key % 2 === 0) {
-                    return $key;
-                }
+                return \React\Promise\resolve(
+                    array_map(
+                        function ($key) {
+                            if ($key % 2 === 0) {
+                                return $key;
+                            }
 
-                return new \Exception("Odd: {$key}");
-            }, $keys));
-        }, $this->eventLoop, $options);
+                            return new \Exception("Odd: {$key}");
+                        },
+                        $keys
+                    )
+                );
+            }, $this->eventLoop, new CacheMap(), $options
+        );
 
         return $evenLoader;
     }
@@ -860,14 +884,21 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
      */
     private function createExceptionLoader()
     {
-        $exceptionLoader = new DataLoader(function ($keys) {
-            $this->loadCalls[] = $keys;
+        $exceptionLoader = new DataLoader(
+            function ($keys) {
+                $this->loadCalls[] = $keys;
 
-            return \React\Promise\resolve(array_map(function ($key) {
-                return new \Exception("Error: {$key}");
-            }, $keys));
+                return \React\Promise\resolve(
+                    array_map(
+                        function ($key) {
+                            return new \Exception("Error: {$key}");
+                        },
+                        $keys
+                    )
+                );
 
-        }, $this->eventLoop);
+            }, $this->eventLoop, new CacheMap()
+        );
 
         return $exceptionLoader;
     }
