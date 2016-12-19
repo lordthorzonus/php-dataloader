@@ -1,8 +1,6 @@
 <?php
 
-
 namespace leinonen\DataLoader;
-
 
 class DataLoaderOptions
 {
@@ -72,15 +70,15 @@ class DataLoaderOptions
      */
     private function validateOptions($maxBatchSize, $shouldBatch, $shouldCache)
     {
-        if (!is_bool($shouldBatch)) {
+        if (! is_bool($shouldBatch)) {
             throw new \InvalidArgumentException('Expected argument $shouldBatch to be a boolean');
         }
 
-        if (!is_bool($shouldCache)) {
+        if (! is_bool($shouldCache)) {
             throw new \InvalidArgumentException('Expected argument $shouldCache to be a boolean');
         }
 
-        if ($maxBatchSize !== null && !is_int($maxBatchSize)) {
+        if ($maxBatchSize !== null && ! is_int($maxBatchSize)) {
             throw new \InvalidArgumentException('Expected argument $maxBatchSize to be null or an integer');
         }
     }

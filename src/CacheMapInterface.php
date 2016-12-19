@@ -1,4 +1,5 @@
 <?php
+
 namespace leinonen\DataLoader;
 
 interface CacheMapInterface

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace leinonen\DataLoader;
-
 
 class CacheMap implements CacheMapInterface, \Countable
 {
@@ -36,8 +34,9 @@ class CacheMap implements CacheMapInterface, \Countable
         ];
         $index = $this->findCacheIndexByKey($key);
 
-        if($index !== null) {
+        if ($index !== null) {
             $this->cache[$index] = $cacheEntry;
+
             return;
         }
 
@@ -83,7 +82,5 @@ class CacheMap implements CacheMapInterface, \Countable
                 return $index;
             }
         }
-
-        return null;
     }
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace leinonen\DataLoader\Tests\Unit;
-
 
 use leinonen\DataLoader\CacheMap;
 
@@ -67,7 +65,7 @@ class CacheMapTest extends \PHPUnit_Framework_TestCase
         $cacheMap->delete(1);
         $this->assertFalse($cacheMap->get(1));
     }
-    
+
     /** @test */
     public function it_can_clear_the_whole_cache()
     {

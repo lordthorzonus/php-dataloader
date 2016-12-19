@@ -1,11 +1,9 @@
 <?php
 
-
 namespace leinonen\DataLoader;
 
-
-use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
+use React\EventLoop\LoopInterface;
 
 class DataLoader
 {
@@ -60,11 +58,11 @@ class DataLoader
      */
     public function load($key)
     {
-        if($key === null) {
-            throw new \InvalidArgumentException(DataLoader::class . '::load must be called with a value, but got null');
+        if ($key === null) {
+            throw new \InvalidArgumentException(self::class . '::load must be called with a value, but got null');
         }
 
-        if($this->options->shouldCache()) {
+        if ($this->options->shouldCache()) {
             if ($this->promiseCache->get($key)) {
                 return $this->promiseCache->get($key);
             }
@@ -72,7 +70,6 @@ class DataLoader
 
         $promise = new Promise(
             function (callable $resolve, callable $reject) use ($key) {
-
                 $this->promiseQueue[] = [
                     'key' => $key,
                     'resolve' => $resolve,
@@ -85,7 +82,7 @@ class DataLoader
             }
         );
 
-        if($this->options->shouldCache()) {
+        if ($this->options->shouldCache()) {
             $this->promiseCache->set($key, $promise);
         }
 
@@ -174,7 +171,7 @@ class DataLoader
      */
     private function scheduleDispatch()
     {
-        if($this->options->shouldBatch()) {
+        if ($this->options->shouldBatch()) {
             $this->eventLoop->nextTick(
                 function () {
                     $this->dispatchQueue();
@@ -221,9 +218,9 @@ class DataLoader
         /** @var Promise $batchPromise */
         $batchPromise = $batchLoadFunction($keys);
 
-        if (! $batchPromise || !is_callable([$batchPromise, 'then'])) {
+        if (! $batchPromise || ! is_callable([$batchPromise, 'then'])) {
             throw new \RuntimeException(
-                DataLoader::class . ' must be constructed with a function which accepts ' .
+                self::class . ' must be constructed with a function which accepts ' .
                 'an array of keys and returns a Promise which resolves to an array of values ' .
                 sprintf('not return a Promise: %s.', gettype($batchPromise))
             );
@@ -231,7 +228,7 @@ class DataLoader
 
         $batchPromise->then(
             function ($values) use ($batch, $keys) {
-                if (!is_array($values)) {
+                if (! is_array($values)) {
                     $this->handleFailedDispatch($batch, new \RuntimeException(
                         DataLoader::class . ' must be constructed with a function which accepts ' .
                         'an array of keys and returns a Promise which resolves to an array of values ' .
@@ -277,11 +274,9 @@ class DataLoader
         $numberOfBatchesToDispatch = count($queue) / $maxBatchSize;
 
         for ($i = 0; $i < $numberOfBatchesToDispatch; $i++) {
-
             $this->dispatchQueueBatch(
                 array_slice($queue, $i * $maxBatchSize, $maxBatchSize)
             );
-
         }
     }
 

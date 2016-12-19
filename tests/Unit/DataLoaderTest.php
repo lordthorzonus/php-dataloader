@@ -1,15 +1,13 @@
 <?php
 
-
 namespace leinonen\DataLoader\Tests\Unit;
 
-
+use React\Promise\Promise;
+use React\EventLoop\Factory;
 use leinonen\DataLoader\CacheMap;
+use React\EventLoop\LoopInterface;
 use leinonen\DataLoader\DataLoader;
 use leinonen\DataLoader\DataLoaderOptions;
-use React\EventLoop\Factory;
-use React\EventLoop\LoopInterface;
-use React\Promise\Promise;
 
 class DataLoaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -166,7 +164,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
             $a = $returnedValues[0];
             $b = $returnedValues[1];
@@ -184,7 +182,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('C')
+            $identityLoader->load('C'),
         ])->then(function ($returnedValues) use (&$a2, &$c) {
             $a2 = $returnedValues[0];
             $c = $returnedValues[1];
@@ -204,7 +202,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
         \React\Promise\all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
-            $identityLoader->load('C')
+            $identityLoader->load('C'),
         ])->then(function ($returnedValues) use (&$a3, &$b2, &$c2) {
             $a3 = $returnedValues[0];
             $b2 = $returnedValues[1];
@@ -230,7 +228,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
             $a = $returnedValues[0];
             $b = $returnedValues[1];
@@ -250,7 +248,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a2, &$b2) {
             $a2 = $returnedValues[0];
             $b2 = $returnedValues[1];
@@ -274,7 +272,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
             $a = $returnedValues[0];
             $b = $returnedValues[1];
@@ -294,7 +292,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a2, &$b2) {
             $a2 = $returnedValues[0];
             $b2 = $returnedValues[1];
@@ -320,7 +318,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
             $a = $returnedValues[0];
             $b = $returnedValues[1];
@@ -346,7 +344,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a1, &$b1) {
             $a1 = $returnedValues[0];
             $b1 = $returnedValues[1];
@@ -365,7 +363,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a2, &$b2) {
             $a2 = $returnedValues[0];
             $b2 = $returnedValues[1];
@@ -391,7 +389,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a1, &$b1) {
             $a1 = $returnedValues[0];
             $b1 = $returnedValues[1];
@@ -410,7 +408,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a2, &$b2) {
             $a2 = $returnedValues[0];
             $b2 = $returnedValues[1];
@@ -431,16 +429,16 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $promise1 = $evenLoader->load(1);
         $exception = null;
-        $promise1->then(null, function ($error) use(&$exception) {
+        $promise1->then(null, function ($error) use (&$exception) {
             $exception = $error;
         });
 
         $this->eventLoop->run();
 
-        /** @var \Exception $exception */
+        /* @var \Exception $exception */
         $this->assertInstanceOf(\Exception::class, $exception);
         $this->assertEquals('Odd: 1', $exception->getMessage());
-        $this->assertEquals($this->loadCalls, [ [1] ]);
+        $this->assertEquals($this->loadCalls, [[1]]);
 
         $promise2 = $evenLoader->load(2);
         $result = null;
@@ -452,7 +450,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(2, $result);
 
-        $this->assertEquals( [ [1], [2] ], $this->loadCalls);
+        $this->assertEquals([[1], [2]], $this->loadCalls);
     }
 
     /** @test */
@@ -474,13 +472,13 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->eventLoop->run();
 
-        /** @var \Exception $exception */
+        /* @var \Exception $exception */
         $this->assertInstanceOf(\Exception::class, $exception);
         $this->assertEquals('Odd: 1', $exception->getMessage());
 
         $this->assertEquals(2, $result);
 
-        $this->assertEquals( [ [1, 2] ], $this->loadCalls);
+        $this->assertEquals([[1, 2]], $this->loadCalls);
     }
 
     /** @test */
@@ -490,13 +488,13 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $exceptionA = null;
         $promise = $exceptionLoader->load(1);
-        $promise->then(null,function ($error) use (&$exceptionA) {
+        $promise->then(null, function ($error) use (&$exceptionA) {
             $exceptionA = $error;
         });
 
         $this->eventLoop->run();
 
-        /** @var \Exception $exceptionA */
+        /* @var \Exception $exceptionA */
         $this->assertInstanceOf(\Exception::class, $exceptionA);
         $this->assertEquals('Error: 1', $exceptionA->getMessage());
 
@@ -508,7 +506,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->eventLoop->run();
 
-        /** @var \Exception $exceptionB */
+        /* @var \Exception $exceptionB */
         $this->assertInstanceOf(\Exception::class, $exceptionB);
         $this->assertEquals('Error: 1', $exceptionB->getMessage());
 
@@ -529,7 +527,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->eventLoop->run();
 
-        /** @var \Exception $exceptionA */
+        /* @var \Exception $exceptionA */
         $this->assertInstanceOf(\Exception::class, $exceptionA);
         $this->assertEquals('Error: 1', $exceptionA->getMessage());
 
@@ -550,7 +548,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->eventLoop->run();
 
-        /** @var \Exception $exceptionA */
+        /* @var \Exception $exceptionA */
         $this->assertInstanceOf(\Exception::class, $exceptionA);
         $this->assertEquals('Error: 1', $exceptionA->getMessage());
 
@@ -563,7 +561,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->eventLoop->run();
 
-        /** @var \Exception $exceptionB */
+        /* @var \Exception $exceptionB */
         $this->assertInstanceOf(\Exception::class, $exceptionB);
         $this->assertEquals('Error: 1', $exceptionB->getMessage());
 
@@ -596,11 +594,11 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->eventLoop->run();
 
-        /** @var \Exception $exception1 */
+        /* @var \Exception $exception1 */
         $this->assertInstanceOf(\Exception::class, $exception1);
         $this->assertEquals('I am a terrible loader', $exception1->getMessage());
 
-        /** @var \Exception $exception2 */
+        /* @var \Exception $exception2 */
         $this->assertInstanceOf(\Exception::class, $exception2);
         $this->assertEquals('I am a terrible loader', $exception2->getMessage());
 
@@ -618,7 +616,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load($keyA),
-            $identityLoader->load($keyB)
+            $identityLoader->load($keyB),
         ])->then(function ($returnedValues) use (&$valueA, &$valueB) {
             $valueA = $returnedValues[0];
             $valueB = $returnedValues[1];
@@ -641,7 +639,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load($keyA),
-            $identityLoader->load($keyB)
+            $identityLoader->load($keyB),
         ])->then(function ($returnedValues) use (&$valueA, &$valueB) {
             $valueA = $returnedValues[0];
             $valueB = $returnedValues[1];
@@ -665,7 +663,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load(1),
-            $identityLoader->load(2)
+            $identityLoader->load(2),
         ])->then(function ($returnedValues) use (&$a, &$b) {
             $a = $returnedValues[0];
             $b = $returnedValues[1];
@@ -688,7 +686,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('B')
+            $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
             $a = $returnedValues[0];
             $b = $returnedValues[1];
@@ -706,7 +704,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
 
         \React\Promise\all([
             $identityLoader->load('A'),
-            $identityLoader->load('C')
+            $identityLoader->load('C'),
         ])->then(function ($returnedValues) use (&$a2, &$c) {
             $a2 = $returnedValues[0];
             $c = $returnedValues[1];
@@ -726,7 +724,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
         \React\Promise\all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
-            $identityLoader->load('C')
+            $identityLoader->load('C'),
         ])->then(function ($returnedValues) use (&$a3, &$b2, &$c2) {
             $a3 = $returnedValues[0];
             $b2 = $returnedValues[1];
@@ -753,13 +751,13 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
                 \React\Promise\resolve()->then(function () use ($identityLoader) {
                     $identityLoader->load('B');
                     \React\Promise\resolve()->then(function () use ($identityLoader) {
-                       $identityLoader->load('C');
-                       \React\Promise\resolve()->then(function () use ($identityLoader) {
-                           $identityLoader->load('D');
-                       });
+                        $identityLoader->load('C');
+                        \React\Promise\resolve()->then(function () use ($identityLoader) {
+                            $identityLoader->load('D');
+                        });
                     });
                 });
-            })
+            }),
         ]);
 
         $this->eventLoop->run();
@@ -896,7 +894,6 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
                         $keys
                     )
                 );
-
             }, $this->eventLoop, new CacheMap()
         );
 
