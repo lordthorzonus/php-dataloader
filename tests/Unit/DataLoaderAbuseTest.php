@@ -27,14 +27,18 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     public function load_method_requires_an_actual_key()
     {
-        $loader = $this->createIdentityLoader();
+        $loader = $this->createDataLoader(function ($keys) {
+            return \React\Promise\resolve($keys);
+        });
         $loader->load(null);
     }
 
     /** @test */
     public function falsey_values_are_however_permitted()
     {
-        $loader = $this->createIdentityLoader();
+        $loader = $this->createDataLoader(function ($keys) {
+            return \React\Promise\resolve($keys);
+        });
         $this->assertInstanceOf(Promise::class, $loader->load(0));
     }
 
@@ -45,7 +49,9 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     public function load_many_requires_actual_keys()
     {
-        $loader = $this->createIdentityLoader();
+        $loader = $this->createDataLoader(function ($keys) {
+            return \React\Promise\resolve($keys);
+        });
         $loader->loadMany([null, null]);
     }
 
@@ -57,10 +63,8 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     public function batch_function_must_return_a_promise_not_null()
     {
-        $badLoader = new DataLoader(
-            function ($keys) {
-            }, $this->eventLoop, new CacheMap()
-        );
+        $badLoader = $this->createDataLoader(function ($keys) {
+        });
 
         $badLoader->load(1);
         $this->eventLoop->run();
@@ -89,11 +93,9 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     public function batch_function_must_return_a_promise_of_an_array_not_null()
     {
-        $badLoader = new DataLoader(
-            function ($keys) {
-                return \React\Promise\resolve();
-            }, $this->eventLoop, new CacheMap()
-        );
+        $badLoader = $this->createDataLoader(function ($keys) {
+            return \React\Promise\resolve();
+        });
 
         $exception = null;
 
@@ -114,11 +116,9 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
      */
     public function batch_function_must_promise_an_array_of_correct_length()
     {
-        $emptyArrayLoader = new DataLoader(
-            function ($keys) {
-                return \React\Promise\resolve([]);
-            }, $this->eventLoop, new CacheMap()
-        );
+        $emptyArrayLoader = $this->createDataLoader(function ($keys) {
+            return \React\Promise\resolve([]);
+        });
 
         $exception = null;
 
@@ -138,20 +138,14 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Creates a simple DataLoader which returns the given keys as values.
+     * Creates a simple DataLoader.
      *
+     * @param $batchLoadFunction
      * @param array $options
-     *
      * @return DataLoader
      */
-    private function createIdentityLoader($options = null)
+    private function createDataLoader($batchLoadFunction, $options = null)
     {
-        $identityLoader = new DataLoader(
-            function ($keys) {
-                return \React\Promise\resolve($keys);
-            }, $this->eventLoop, new CacheMap(), $options
-        );
-
-        return $identityLoader;
+        return new DataLoader($batchLoadFunction, $this->eventLoop, new CacheMap(), $options);
     }
 }
