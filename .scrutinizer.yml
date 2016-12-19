@@ -1,0 +1,56 @@
+build:
+    environment:
+        php:
+            version: 5.5
+    dependencies:
+        before:
+            - composer install --dev --prefer-source --no-interaction
+            - composer -v update
+    tests:
+        override:
+            -
+                command: 'phpunit --coverage-clover=coverage.clover'
+                coverage:
+                    file: 'coverage.clover'
+                    format: 'php-clover'
+filter:
+    excluded_paths:
+        - 'tests/*'
+before_commands:
+    - composer install --dev --prefer-source --no-interaction
+
+checks:
+    php:
+        code_rating: true
+        duplication: false
+        uppercase_constants: true
+        simplify_boolean_return: true
+        return_doc_comments: true
+        properties_in_camelcaps: true
+        parameters_in_camelcaps: true
+        parameter_doc_comments: true
+        param_doc_comment_if_not_inferrable: true
+coding_style:
+    php:
+        spaces:
+            around_operators:
+                negation: true
+        braces:
+            classes_functions:
+                class: new-line
+                function: new-line
+            if:
+                opening: end-of-line
+            for:
+                opening: end-of-line
+            while:
+                opening: end-of-line
+            do_while:
+                opening: end-of-line
+            switch:
+                opening: end-of-line
+            try:
+                opening: end-of-line
+        upper_lower_casing:
+            constants:
+                true_false_null: lower
