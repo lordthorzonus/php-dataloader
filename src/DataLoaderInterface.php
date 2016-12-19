@@ -1,4 +1,5 @@
 <?php
+
 namespace leinonen\DataLoader;
 
 use React\Promise\Promise;
