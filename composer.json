@@ -1,6 +1,8 @@
 {
     "name": "leinonen/dataloader",
     "type": "library",
+    "description": "Port of Facebook's dataloader to PHP",
+    "keywords": ["batch loading", "dataloader", "graphql"],
     "require": {
         "react/promise": "^2.5",
         "react/event-loop": "^0.4.2"
