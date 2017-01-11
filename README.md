@@ -17,13 +17,12 @@ Quick port of the [Facebook's DataLoader](https://github.com/facebook/dataloader
 $userByIdLoader = new DataLoader(function ($ids) {
   $users = User::findMany($ids);
   
-  // Make sure that the users are on the same order as the given ids
+  // Make sure that the users are on the same order as the given ids for the loader
   $orderedUsers = collect($ids)->map(function ($id) use ($users) {
-    foreach ($users as $user) {
-      if ($user->id === $id) {
-        return $user;
-      }
-   });
+    return $users->first(function ($user) use ($id) {
+      return $user->id === $id;
+    });
+  });
    
    return \React\Promise\resolve($orderedUsers);
 }, $eventLoopFromIoCContainer, $cacheMapFromIoCContainer);
