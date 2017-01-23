@@ -20,6 +20,46 @@ Quick port of the [Facebook's DataLoader](https://github.com/facebook/dataloader
 - [ ] Documentation for the API and usage examples
 - [ ] Abstract event loop and promises to be usable with any implementation? 
 
+## API
+
+### `load($key)`
+
+Loads a key, returning a `Promise` for the value represented by that key.
+
+- `@param mixed $key An key value to load.`
+
+### `loadMany($keys)`
+
+Loads multiple keys, promising an array of values.
+
+This is equivalent to the more verbose:
+
+```js
+$promises = \React\Promise\all([
+  $myLoader->load('a'),
+  $myLoader->load('b')
+]);
+```
+
+- `@param array $keys: An array of key values to load.`
+
+### `clear($key)`
+
+Clears the value at `$key` from the cache, if it exists. Returns itself for
+method chaining.
+
+- `@param mixed key: An key value to clear.`
+
+### `clearAll()`
+
+Clears the entire cache. Returns itself for method chaining.
+
+### `prime($key, $value)`
+
+Primes the cache with the provided key and value. If the key already exists, no
+change is made. (To forcefully prime the cache, clear the key first with
+`$loader->clear($key)->prime($key, $value)`. Returns itself for method chaining.
+
 ## Usage with common ORM's
 
 ### Eloquent (Laravel)
