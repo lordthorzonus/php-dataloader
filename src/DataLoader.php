@@ -191,12 +191,10 @@ class DataLoader implements DataLoaderInterface
         /** @var Promise $batchPromise */
         $batchPromise = $batchLoadFunction($keys);
 
-        if (! $batchPromise || ! \is_callable([$batchPromise, 'then'])) {
-            return $this->handleFailedDispatch($batch, new DataLoaderException(
-                self::class . ' must be constructed with a function which accepts ' .
-                'an array of keys and returns a Promise which resolves to an array of values ' .
-                \sprintf('not return a Promise: %s.', \gettype($batchPromise))
-            ));
+        try {
+            $this->validateBatchPromise($batchPromise);
+        } catch (DataLoaderException $exception) {
+            return $this->handleFailedDispatch($batch, $exception);
         }
 
         $batchPromise->then(
@@ -262,7 +260,7 @@ class DataLoader implements DataLoaderInterface
     }
 
     /**
-     * Validates the batch promises output.
+     * Validates the batch promise's output.
      *
      * @param array $values Values from resolved promise.
      * @param array $keys Keys which the DataLoaders load was called with
@@ -283,6 +281,24 @@ class DataLoader implements DataLoaderInterface
                 'an array of keys and returns a Promise which resolves to an array of values, but ' .
                 'the function did not return a Promise of an array of the same length as the array of keys.' .
                 \sprintf("\n Keys: %s\n Values: %s\n", \count($keys), \count($values))
+            );
+        }
+    }
+
+    /**
+     * Validates the batch promise returned from the batch load function.
+     *
+     * @param $batchPromise
+     *
+     * @throws DataLoaderException
+     */
+    private function validateBatchPromise($batchPromise)
+    {
+        if (! $batchPromise || ! \is_callable([$batchPromise, 'then'])) {
+            throw new DataLoaderException(
+                self::class . ' must be constructed with a function which accepts ' .
+                'an array of keys and returns a Promise which resolves to an array of values ' .
+                \sprintf('the function returned %s.', \gettype($batchPromise))
             );
         }
     }
