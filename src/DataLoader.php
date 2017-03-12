@@ -188,9 +188,10 @@ class DataLoader implements DataLoaderInterface
     private function dispatchQueueBatch($batch)
     {
         $keys = array_column($batch, 'key');
+        $batchLoadFunction = $this->batchLoadFunction;
 
         /** @var Promise $batchPromise */
-        $batchPromise = ($this->batchLoadFunction)($keys);
+        $batchPromise = $batchLoadFunction($keys);
 
         if (! $batchPromise || ! is_callable([$batchPromise, 'then'])) {
             return $this->handleFailedDispatch($batch, new DataLoaderException(
