@@ -100,8 +100,8 @@ class DataLoaderOptions
      */
     private function validateMaxBatchSizeOption($maxBatchSize)
     {
-        if ($maxBatchSize !== null && ! \is_int($maxBatchSize)) {
-            throw new \InvalidArgumentException('Expected argument $maxBatchSize to be null or an integer');
+        if ($maxBatchSize !== null && ! \is_int($maxBatchSize) || (int) $maxBatchSize < 0) {
+            throw new \InvalidArgumentException('Expected argument $maxBatchSize to be null or a positive integer');
         }
     }
 }
