@@ -80,7 +80,7 @@ class DataLoaderOptions
      */
     private function validateBatchOption($shouldBatch)
     {
-        if (!\is_bool($shouldBatch)) {
+        if (! \is_bool($shouldBatch)) {
             throw new \InvalidArgumentException('Expected argument $shouldBatch to be a boolean');
         }
     }
@@ -90,7 +90,7 @@ class DataLoaderOptions
      */
     private function validateCacheOption($shouldCache)
     {
-        if (!\is_bool($shouldCache)) {
+        if (! \is_bool($shouldCache)) {
             throw new \InvalidArgumentException('Expected argument $shouldCache to be a boolean');
         }
     }
@@ -100,7 +100,7 @@ class DataLoaderOptions
      */
     private function validateMaxBatchSizeOption($maxBatchSize)
     {
-        if ($maxBatchSize !== null && !\is_int($maxBatchSize)) {
+        if ($maxBatchSize !== null && ! \is_int($maxBatchSize)) {
             throw new \InvalidArgumentException('Expected argument $maxBatchSize to be null or an integer');
         }
     }

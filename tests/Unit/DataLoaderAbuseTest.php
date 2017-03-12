@@ -2,12 +2,12 @@
 
 namespace leinonen\DataLoader\Tests\Unit;
 
-use leinonen\DataLoader\DataLoaderException;
 use React\Promise\Promise;
 use React\EventLoop\Factory;
 use leinonen\DataLoader\CacheMap;
 use React\EventLoop\LoopInterface;
 use leinonen\DataLoader\DataLoader;
+use leinonen\DataLoader\DataLoaderException;
 
 class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
 {
@@ -62,7 +62,6 @@ class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
     public function batch_function_must_return_a_promise_not_null()
     {
         $badLoader = $this->createDataLoader(function ($keys) {
-            return null;
         });
 
         $exception = null;
