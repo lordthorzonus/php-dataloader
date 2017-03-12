@@ -62,10 +62,8 @@ class DataLoader implements DataLoaderInterface
             throw new \InvalidArgumentException(self::class . '::load must be called with a value, but got null');
         }
 
-        if ($this->options->shouldCache()) {
-            if ($this->promiseCache->get($key)) {
-                return $this->promiseCache->get($key);
-            }
+        if ($this->options->shouldCache() && $this->promiseCache->get($key)) {
+            return $this->promiseCache->get($key);
         }
 
         $promise = new Promise(
