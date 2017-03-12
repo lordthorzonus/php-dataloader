@@ -183,70 +183,42 @@ class DataLoader implements DataLoaderInterface
     /**
      * Dispatches a batch of a queue. The given batch can also be the whole queue.
      *
-     * @param $batch
-     *
-     * @return void
+     * @param array $batch
      */
     private function dispatchQueueBatch($batch)
     {
         $keys = array_column($batch, 'key');
 
-        $batchLoadFunction = $this->batchLoadFunction;
         /** @var Promise $batchPromise */
-        $batchPromise = $batchLoadFunction($keys);
+        $batchPromise = ($this->batchLoadFunction)($keys);
 
         if (! $batchPromise || ! is_callable([$batchPromise, 'then'])) {
-            throw new \RuntimeException(
+            return $this->handleFailedDispatch($batch, new DataLoaderException(
                 self::class . ' must be constructed with a function which accepts ' .
                 'an array of keys and returns a Promise which resolves to an array of values ' .
                 sprintf('not return a Promise: %s.', gettype($batchPromise))
-            );
+            ));
         }
 
         $batchPromise->then(
             function ($values) use ($batch, $keys) {
-                if (! is_array($values)) {
-                    $this->handleFailedDispatch($batch, new \RuntimeException(
-                        self::class . ' must be constructed with a function which accepts ' .
-                        'an array of keys and returns a Promise which resolves to an array of values ' .
-                        sprintf('not return a Promise: %s.', gettype($values))
-                    ));
-                }
-
-                if (count($values) !== count($keys)) {
-                    $this->handleFailedDispatch($batch, new \RuntimeException(
-                       self::class . ' must be constructed with a function which accepts ' .
-                       'an array of keys and returns a Promise which resolves to an array of values, but ' .
-                       'the function did not return a Promise of an array of the same length as the array of keys.' .
-                       sprintf("\n Keys: %s\n Values: %s\n", count($keys), count($values))
-                    ));
-                }
-
-                // Handle the batch by resolving the promises and rejecting ones that return Exceptions.
-                foreach ($batch as $index => $queueItem) {
-                    $value = $values[$index];
-                    if ($value instanceof \Exception) {
-                        $queueItem['reject']($value);
-                    } else {
-                        $queueItem['resolve']($value);
-                    }
-                }
-            },
-            function ($error) use ($batch) {
-                $this->handleFailedDispatch($batch, $error);
+                $this->validateBatchPromiseOutput($values, $keys);
+                $this->handleSuccessfulDispatch($batch, $values);
             }
-        );
+        )->then(null, function ($error) use ($batch) {
+            $this->handleFailedDispatch($batch, $error);
+        });
     }
 
     /**
      * Dispatches the given queue in multiple batches.
      *
-     * @param $queue
+     * @param array $queue
      * @param int $maxBatchSize
      *
      * @return void
      */
-    private function dispatchQueueInMultipleBatches($queue, $maxBatchSize)
+    private function dispatchQueueInMultipleBatches(array $queue, $maxBatchSize)
     {
         $numberOfBatchesToDispatch = count($queue) / $maxBatchSize;
 
@@ -258,19 +230,61 @@ class DataLoader implements DataLoaderInterface
     }
 
     /**
+     * Handles the batch by resolving the promises and rejecting ones that return Exceptions.
+     *
+     * @param array $batch
+     * @param array $values
+     */
+    private function handleSuccessfulDispatch(array $batch, array $values)
+    {
+        foreach ($batch as $index => $queueItem) {
+            $value = $values[$index];
+            if ($value instanceof \Exception) {
+                $queueItem['reject']($value);
+            } else {
+                $queueItem['resolve']($value);
+            }
+        }
+    }
+
+    /**
      * Handles the failed batch dispatch.
      *
-     * @param $batch
+     * @param array $batch
      * @param \Exception $error
-     *
-     * @return void
      */
-    private function handleFailedDispatch($batch, \Exception $error)
+    private function handleFailedDispatch(array $batch, \Exception $error)
     {
         foreach ($batch as $index => $queueItem) {
             // We don't want to cache individual loads if the entire batch dispatch fails.
             $this->clear($queueItem['key']);
             $queueItem['reject']($error);
+        }
+    }
+
+    /**
+     * Validates the batch promises output.
+     *
+     * @param array $values Values from resolved promise.
+     * @param array $keys Keys which the DataLoaders load was called with
+     */
+    private function validateBatchPromiseOutput($values, $keys)
+    {
+        if (! is_array($values)) {
+            throw new DataLoaderException(
+                self::class . ' must be constructed with a function which accepts ' .
+                'an array of keys and returns a Promise which resolves to an array of values ' .
+                sprintf('not return a Promise: %s.', gettype($values))
+            );
+        }
+
+        if (count($values) !== count($keys)) {
+            throw new DataLoaderException(
+                self::class . ' must be constructed with a function which accepts ' .
+                'an array of keys and returns a Promise which resolves to an array of values, but ' .
+                'the function did not return a Promise of an array of the same length as the array of keys.' .
+                sprintf("\n Keys: %s\n Values: %s\n", count($keys), count($values))
+            );
         }
     }
 }
