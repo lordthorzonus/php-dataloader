@@ -11,3 +11,5 @@ sudo: false
 install:
   - travis_retry composer self-update && composer --version
   - travis_retry composer install --prefer-source --no-interaction --no-progress
+
+script: vendor/bin/phpunit
