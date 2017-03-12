@@ -76,7 +76,7 @@ class DataLoader implements DataLoaderInterface
                     'reject' => $reject,
                 ];
 
-                if (count($this->promiseQueue) === 1) {
+                if (\count($this->promiseQueue) === 1) {
                     $this->scheduleDispatch();
                 }
             }
@@ -95,7 +95,7 @@ class DataLoader implements DataLoaderInterface
     public function loadMany(array $keys)
     {
         return \React\Promise\all(
-            array_map(
+            \array_map(
                 function ($key) {
                     return $this->load($key);
                 },
@@ -187,17 +187,17 @@ class DataLoader implements DataLoaderInterface
      */
     private function dispatchQueueBatch($batch)
     {
-        $keys = array_column($batch, 'key');
+        $keys = \array_column($batch, 'key');
         $batchLoadFunction = $this->batchLoadFunction;
 
         /** @var Promise $batchPromise */
         $batchPromise = $batchLoadFunction($keys);
 
-        if (! $batchPromise || ! is_callable([$batchPromise, 'then'])) {
+        if (! $batchPromise || ! \is_callable([$batchPromise, 'then'])) {
             return $this->handleFailedDispatch($batch, new DataLoaderException(
                 self::class . ' must be constructed with a function which accepts ' .
                 'an array of keys and returns a Promise which resolves to an array of values ' .
-                sprintf('not return a Promise: %s.', gettype($batchPromise))
+                \sprintf('not return a Promise: %s.', \gettype($batchPromise))
             ));
         }
 
@@ -221,11 +221,11 @@ class DataLoader implements DataLoaderInterface
      */
     private function dispatchQueueInMultipleBatches(array $queue, $maxBatchSize)
     {
-        $numberOfBatchesToDispatch = count($queue) / $maxBatchSize;
+        $numberOfBatchesToDispatch = \count($queue) / $maxBatchSize;
 
         for ($i = 0; $i < $numberOfBatchesToDispatch; $i++) {
             $this->dispatchQueueBatch(
-                array_slice($queue, $i * $maxBatchSize, $maxBatchSize)
+                \array_slice($queue, $i * $maxBatchSize, $maxBatchSize)
             );
         }
     }
@@ -271,20 +271,20 @@ class DataLoader implements DataLoaderInterface
      */
     private function validateBatchPromiseOutput($values, $keys)
     {
-        if (! is_array($values)) {
+        if (! \is_array($values)) {
             throw new DataLoaderException(
                 self::class . ' must be constructed with a function which accepts ' .
                 'an array of keys and returns a Promise which resolves to an array of values ' .
-                sprintf('not return a Promise: %s.', gettype($values))
+                \sprintf('not return a Promise: %s.', \gettype($values))
             );
         }
 
-        if (count($values) !== count($keys)) {
+        if (\count($values) !== \count($keys)) {
             throw new DataLoaderException(
                 self::class . ' must be constructed with a function which accepts ' .
                 'an array of keys and returns a Promise which resolves to an array of values, but ' .
                 'the function did not return a Promise of an array of the same length as the array of keys.' .
-                sprintf("\n Keys: %s\n Values: %s\n", count($keys), count($values))
+                \sprintf("\n Keys: %s\n Values: %s\n", \count($keys), \count($values))
             );
         }
     }

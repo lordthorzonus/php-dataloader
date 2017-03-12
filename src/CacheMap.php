@@ -65,7 +65,7 @@ class CacheMap implements CacheMapInterface, \Countable
      */
     public function count()
     {
-        return count($this->cache);
+        return \count($this->cache);
     }
 
     /**
