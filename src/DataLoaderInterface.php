@@ -29,6 +29,7 @@ interface DataLoaderInterface
      * @param array $keys
      *
      * @return Promise
+     * @throws \InvalidArgumentException
      */
     public function loadMany(array $keys);
 
