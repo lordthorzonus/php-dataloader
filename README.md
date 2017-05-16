@@ -31,7 +31,7 @@ composer require leinonen/php-dataloader
 ```
 
 ## Usage
-To create a loader you must provide a batching function, an internal memoization cache and the global event loop from ReactPHP.
+To create a loader you must provide a batching function, an internal memoization cache and the global event loop from ReactPHP. To have better understanding what the ReactPHP event loop is and how it is used refer to it's [documentation](https://github.com/reactphp/event-loop).
 
 ```php
 use leinonen\DataLoader\Dataloader;
