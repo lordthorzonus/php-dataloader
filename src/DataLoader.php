@@ -50,7 +50,7 @@ class DataLoader implements DataLoaderInterface
         $this->batchLoadFunction = $batchLoadFunction;
         $this->eventLoop = $loop;
         $this->promiseCache = $cacheMap;
-        $this->options = empty($options) ? new DataLoaderOptions() : $options;
+        $this->options = $options === null ? new DataLoaderOptions() : $options;
     }
 
     /**
@@ -147,7 +147,7 @@ class DataLoader implements DataLoaderInterface
     private function scheduleDispatch()
     {
         if ($this->options->shouldBatch()) {
-            $this->eventLoop->nextTick(
+            $this->eventLoop->futureTick(
                 function () {
                     $this->dispatchQueue();
                 }
@@ -264,6 +264,8 @@ class DataLoader implements DataLoaderInterface
      *
      * @param array $values Values from resolved promise.
      * @param array $keys Keys which the DataLoaders load was called with
+     *
+     * @throws DataLoaderException
      */
     private function validateBatchPromiseOutput($values, $keys)
     {
