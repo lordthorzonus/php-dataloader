@@ -41,7 +41,7 @@ $eventLoop = Factory::create();
 
 $bandLoader = new DataLoader(
     function ($keys) {
-        // Batch load users with given keys.
+        // Batch load bands with given keys.
     },
     $eventLoop,
     new CacheMap()
