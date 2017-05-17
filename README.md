@@ -59,7 +59,7 @@ $bandLoader->load(2)->then(function ($band) {
     echo "Band #${$band->getId()} loaded";
 });
 
-$eventLoop->run();
+$eventLoop->run(); // The batch function will be called with keys [1, 2] at this point
 ```
 
 Calling the load function returns `React\Promise\Promise`s. To have a better understanding how to use promises within PHP refer to the [ReactPHP docs](https://github.com/reactphp/promise).
