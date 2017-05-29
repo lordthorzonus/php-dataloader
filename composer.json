@@ -2,13 +2,17 @@
     "name": "leinonen/php-dataloader",
     "type": "library",
     "description": "Port of Facebook's dataloader to PHP",
-    "keywords": ["batch loading", "dataloader", "graphql"],
+    "keywords": [
+        "batch loading",
+        "dataloader",
+        "graphql"
+    ],
     "require": {
         "react/promise": "^2.5",
         "react/event-loop": "^0.4.2"
     },
-    "require-dev" : {
-        "phpunit/phpunit": "^4.8"
+    "require-dev": {
+        "phpunit/phpunit": "^6.1.4"
     },
     "license": "MIT",
     "authors": [
@@ -27,8 +31,8 @@
             "leinonen\\DataLoader\\Tests\\": "tests/"
         }
     },
-    "scripts" : {
-        "post-install-cmd" : [
+    "scripts": {
+        "post-install-cmd": [
             "cp -n phpunit.xml.dist phpunit.xml"
         ]
     }
