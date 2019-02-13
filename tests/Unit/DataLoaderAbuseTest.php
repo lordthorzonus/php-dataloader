@@ -8,15 +8,16 @@ use leinonen\DataLoader\CacheMap;
 use React\EventLoop\LoopInterface;
 use leinonen\DataLoader\DataLoader;
 use leinonen\DataLoader\DataLoaderException;
+use PHPUnit\Framework\TestCase;
 
-class DataLoaderAbuseTest extends \PHPUnit_Framework_TestCase
+class DataLoaderAbuseTest extends TestCase
 {
     /**
      * @var LoopInterface
      */
     private $eventLoop;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->eventLoop = Factory::create();
     }

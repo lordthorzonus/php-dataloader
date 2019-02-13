@@ -3,8 +3,9 @@
 namespace leinonen\DataLoader\Tests\Unit;
 
 use leinonen\DataLoader\CacheMap;
+use PHPUnit\Framework\TestCase;
 
-class CacheMapTest extends \PHPUnit_Framework_TestCase
+class CacheMapTest extends TestCase
 {
     /** @test */
     public function it_can_cache_entries()

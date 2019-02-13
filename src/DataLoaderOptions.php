@@ -27,9 +27,9 @@ class DataLoaderOptions
      * @param bool $shouldCache
      */
     public function __construct(
-        $maxBatchSize = null,
-        $shouldBatch = true,
-        $shouldCache = true
+        ?int $maxBatchSize = null,
+        bool $shouldBatch = true,
+        bool $shouldCache = true
     ) {
         $this->validateOptions($maxBatchSize, $shouldBatch, $shouldCache);
         $this->shouldBatch = $shouldBatch;
@@ -40,7 +40,7 @@ class DataLoaderOptions
     /**
      * @return bool
      */
-    public function shouldBatch()
+    public function shouldBatch(): bool
     {
         return $this->shouldBatch;
     }
@@ -48,7 +48,7 @@ class DataLoaderOptions
     /**
      * @return null|int
      */
-    public function getMaxBatchSize()
+    public function getMaxBatchSize(): ?int
     {
         return $this->maxBatchSize;
     }
@@ -56,7 +56,7 @@ class DataLoaderOptions
     /**
      * @return bool
      */
-    public function shouldCache()
+    public function shouldCache(): bool
     {
         return $this->shouldCache;
     }
@@ -68,31 +68,9 @@ class DataLoaderOptions
      * @param bool $shouldBatch
      * @param bool $shouldCache
      */
-    private function validateOptions($maxBatchSize, $shouldBatch, $shouldCache)
+    private function validateOptions($maxBatchSize, $shouldBatch, $shouldCache): void
     {
         $this->validateMaxBatchSizeOption($maxBatchSize);
-        $this->validateBatchOption($shouldBatch);
-        $this->validateCacheOption($shouldCache);
-    }
-
-    /**
-     * @param bool $shouldBatch
-     */
-    private function validateBatchOption($shouldBatch)
-    {
-        if (! \is_bool($shouldBatch)) {
-            throw new \InvalidArgumentException('Expected argument $shouldBatch to be a boolean');
-        }
-    }
-
-    /**
-     * @param bool $shouldCache
-     */
-    private function validateCacheOption($shouldCache)
-    {
-        if (! \is_bool($shouldCache)) {
-            throw new \InvalidArgumentException('Expected argument $shouldCache to be a boolean');
-        }
     }
 
     /**

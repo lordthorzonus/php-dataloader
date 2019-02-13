@@ -4,6 +4,7 @@ namespace leinonen\DataLoader;
 
 use React\Promise\Promise;
 use React\EventLoop\LoopInterface;
+use React\Promise\PromiseInterface;
 
 class DataLoader implements DataLoaderInterface
 {
@@ -56,7 +57,7 @@ class DataLoader implements DataLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function load($key)
+    public function load($key): PromiseInterface
     {
         if ($key === null) {
             throw new \InvalidArgumentException(self::class . '::load must be called with a value, but got null');
@@ -90,7 +91,7 @@ class DataLoader implements DataLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function loadMany(array $keys)
+    public function loadMany(array $keys): PromiseInterface
     {
         return \React\Promise\all(
             \array_map(
@@ -105,27 +106,23 @@ class DataLoader implements DataLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function clear($key)
+    public function clear($key): void
     {
         $this->promiseCache->delete($key);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function clearAll()
+    public function clearAll(): void
     {
         $this->promiseCache->clear();
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function prime($key, $value)
+    public function prime($key, $value): void
     {
         if (! $this->promiseCache->get($key)) {
             // Cache a rejected promise if the value is an Exception, in order to match
@@ -134,8 +131,6 @@ class DataLoader implements DataLoaderInterface
 
             $this->promiseCache->set($key, $promise);
         }
-
-        return $this;
     }
 
     /**
@@ -144,7 +139,7 @@ class DataLoader implements DataLoaderInterface
      *
      * @return void
      */
-    private function scheduleDispatch()
+    private function scheduleDispatch(): void
     {
         if ($this->options->shouldBatch()) {
             $this->eventLoop->futureTick(
@@ -164,7 +159,7 @@ class DataLoader implements DataLoaderInterface
      *
      * @return void
      */
-    private function dispatchQueue()
+    private function dispatchQueue(): void
     {
         $queue = $this->promiseQueue;
         $this->promiseQueue = [];
@@ -215,7 +210,7 @@ class DataLoader implements DataLoaderInterface
      *
      * @return void
      */
-    private function dispatchQueueInMultipleBatches(array $queue, $maxBatchSize)
+    private function dispatchQueueInMultipleBatches(array $queue, $maxBatchSize): void
     {
         $numberOfBatchesToDispatch = \count($queue) / $maxBatchSize;
 
@@ -232,7 +227,7 @@ class DataLoader implements DataLoaderInterface
      * @param array $batch
      * @param array $values
      */
-    private function handleSuccessfulDispatch(array $batch, array $values)
+    private function handleSuccessfulDispatch(array $batch, array $values): void
     {
         foreach ($batch as $index => $queueItem) {
             $value = $values[$index];
@@ -267,7 +262,7 @@ class DataLoader implements DataLoaderInterface
      *
      * @throws DataLoaderException
      */
-    private function validateBatchPromiseOutput($values, $keys)
+    private function validateBatchPromiseOutput($values, $keys): void
     {
         if (! \is_array($values)) {
             throw new DataLoaderException(
@@ -294,7 +289,7 @@ class DataLoader implements DataLoaderInterface
      *
      * @throws DataLoaderException
      */
-    private function validateBatchPromise($batchPromise)
+    private function validateBatchPromise($batchPromise): void
     {
         if (! $batchPromise || ! \is_callable([$batchPromise, 'then'])) {
             throw new DataLoaderException(

@@ -22,7 +22,7 @@ interface CacheMapInterface
      *
      * @return void
      */
-    public function set($key, $value);
+    public function set($key, $value): void;
 
     /**
      * Deletes the cache entry with the given key.
@@ -31,7 +31,7 @@ interface CacheMapInterface
      *
      * @return void
      */
-    public function delete($key);
+    public function delete($key): void;
 
     /**
      * Clears the cache map.

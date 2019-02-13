@@ -3,6 +3,7 @@
 namespace leinonen\DataLoader;
 
 use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 
 interface DataLoaderInterface
 {
@@ -14,7 +15,7 @@ interface DataLoaderInterface
      * @return Promise
      * @throws \InvalidArgumentException
      */
-    public function load($key);
+    public function load($key): PromiseInterface;
 
     /**
      * Loads multiple keys, promising an array of values.
@@ -31,7 +32,7 @@ interface DataLoaderInterface
      * @return Promise
      * @throws \InvalidArgumentException
      */
-    public function loadMany(array $keys);
+    public function loadMany(array $keys): PromiseInterface;
 
     /**
      * Clears the value for the given key from the cache if it exists. Returns itself for method chaining.
@@ -40,14 +41,14 @@ interface DataLoaderInterface
      *
      * @return $this
      */
-    public function clear($key);
+    public function clear($key): void;
 
     /**
      * Clears the entire cache. Returns itself for method chaining.
      *
      * @return $this
      */
-    public function clearAll();
+    public function clearAll(): void;
 
     /**
      * Adds the given key and value to the cache. If the key already exists no change is made.
@@ -58,5 +59,5 @@ interface DataLoaderInterface
      *
      * @return $this
      */
-    public function prime($key, $value);
+    public function prime($key, $value): void;
 }

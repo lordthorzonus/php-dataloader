@@ -3,8 +3,9 @@
 namespace leinonen\DataLoader\Tests\Unit;
 
 use leinonen\DataLoader\DataLoaderOptions;
+use PHPUnit\Framework\TestCase;
 
-class DataLoaderOptionsTest extends \PHPUnit_Framework_TestCase
+class DataLoaderOptionsTest extends TestCase
 {
     /** @test */
     public function it_can_be_initiated()
@@ -28,40 +29,12 @@ class DataLoaderOptionsTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected argument $shouldBatch to be a boolean
-     */
-    public function it_should_throw_an_exception_if_shouldBatch_is_not_a_boolean()
-    {
-        new DataLoaderOptions(null, 1);
-    }
-
-    /**
-     * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected argument $shouldCache to be a boolean
-     */
-    public function it_should_throw_an_exception_if_shouldCache_is_not_a_boolean()
-    {
-        new DataLoaderOptions(2, true, 2);
-    }
-
-    /**
-     * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected argument $maxBatchSize to be null or a positive integer
-     */
-    public function it_should_throw_an_exception_if_maxBatchSize_is_not_null_or_an_integer()
-    {
-        new DataLoaderOptions(true, true, true);
-    }
-
-    /**
-     * @test
-     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Expected argument $maxBatchSize to be null or a positive integer
      */
     public function it_should_throw_an_exception_if_maxBatchSize_is_not_a_positive_integer()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected argument $maxBatchSize to be null or a positive integer');
         new DataLoaderOptions(-2);
     }
 }

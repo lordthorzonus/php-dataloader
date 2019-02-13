@@ -2,6 +2,7 @@
 
 namespace leinonen\DataLoader\Tests\Unit;
 
+use PHPUnit\Framework\TestCase;
 use React\Promise\Promise;
 use React\EventLoop\Factory;
 use leinonen\DataLoader\CacheMap;
@@ -9,7 +10,7 @@ use React\EventLoop\LoopInterface;
 use leinonen\DataLoader\DataLoader;
 use leinonen\DataLoader\DataLoaderOptions;
 
-class DataLoaderTest extends \PHPUnit_Framework_TestCase
+class DataLoaderTest extends TestCase
 {
     /**
      * Property where all the identityLoaders calls are stored during a test.
@@ -23,7 +24,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
      */
     private $eventLoop;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->eventLoop = Factory::create();
         $this->loadCalls = [];
@@ -425,8 +426,10 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('X', $a1);
         $this->assertEquals('B', $b1);
 
-        $identityLoader->clear('A')->prime('A', 'Y');
-        $identityLoader->clear('B')->prime('B', 'Y');
+        $identityLoader->clear('A');
+        $identityLoader->prime('A', 'Y');
+        $identityLoader->clear('B');
+        $identityLoader->prime('B', 'Y');
 
         $a2 = null;
         $b2 = null;
@@ -590,7 +593,7 @@ class DataLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(\Exception::class, $exceptionB);
         $this->assertEquals('Error: 1', $exceptionB->getMessage());
 
-        $this->assertEquals([1], [1], $this->loadCalls);
+        $this->assertSame([[1], [1]], $this->loadCalls);
     }
 
     /** @test */

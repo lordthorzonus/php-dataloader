@@ -26,7 +26,7 @@ class CacheMap implements CacheMapInterface, \Countable
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set($key, $value): void
     {
         $cacheEntry = [
             'key' => $key,
@@ -46,7 +46,7 @@ class CacheMap implements CacheMapInterface, \Countable
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
+    public function delete($key): void
     {
         $index = $this->findCacheIndexByKey($key);
         unset($this->cache[$index]);
@@ -55,7 +55,7 @@ class CacheMap implements CacheMapInterface, \Countable
     /**
      * {@inheritdoc}
      */
-    public function clear()
+    public function clear(): void
     {
         $this->cache = [];
     }
@@ -63,7 +63,7 @@ class CacheMap implements CacheMapInterface, \Countable
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return \count($this->cache);
     }
