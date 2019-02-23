@@ -28,8 +28,6 @@ class DataLoaderOptionsTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected argument $maxBatchSize to be null or a positive integer
      */
     public function it_should_throw_an_exception_if_maxBatchSize_is_not_a_positive_integer()
     {

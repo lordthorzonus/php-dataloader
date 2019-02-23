@@ -2,7 +2,7 @@
 
 namespace leinonen\DataLoader;
 
-class CacheMap implements CacheMapInterface, \Countable
+final class CacheMap implements CacheMapInterface, \Countable
 {
     /**
      * @var array

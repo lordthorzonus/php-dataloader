@@ -24,11 +24,12 @@ class DataLoaderAbuseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage leinonen\DataLoader\DataLoader::load must be called with a value, but got null
      */
     public function load_method_requires_an_actual_key()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('leinonen\DataLoader\DataLoader::load must be called with a value, but got null');
+
         $loader = $this->createDataLoader(function ($keys) {
             return \React\Promise\resolve($keys);
         });
@@ -46,11 +47,12 @@ class DataLoaderAbuseTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage leinonen\DataLoader\DataLoader::load must be called with a value, but got null
      */
     public function load_many_requires_actual_keys()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('leinonen\DataLoader\DataLoader::load must be called with a value, but got null');
+
         $loader = $this->createDataLoader(function ($keys) {
             return \React\Promise\resolve($keys);
         });

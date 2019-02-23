@@ -2,7 +2,7 @@
 
 namespace leinonen\DataLoader;
 
-class DataLoaderOptions
+final class DataLoaderOptions
 {
     /**
      * @var bool
@@ -31,7 +31,7 @@ class DataLoaderOptions
         bool $shouldBatch = true,
         bool $shouldCache = true
     ) {
-        $this->validateOptions($maxBatchSize, $shouldBatch, $shouldCache);
+        $this->validateMaxBatchSizeOption($maxBatchSize);
         $this->shouldBatch = $shouldBatch;
         $this->maxBatchSize = $maxBatchSize;
         $this->shouldCache = $shouldCache;
@@ -59,18 +59,6 @@ class DataLoaderOptions
     public function shouldCache(): bool
     {
         return $this->shouldCache;
-    }
-
-    /**
-     * Validates the options.
-     *
-     * @param null|int $maxBatchSize
-     * @param bool $shouldBatch
-     * @param bool $shouldCache
-     */
-    private function validateOptions($maxBatchSize, $shouldBatch, $shouldCache): void
-    {
-        $this->validateMaxBatchSizeOption($maxBatchSize);
     }
 
     /**

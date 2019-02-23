@@ -2,11 +2,11 @@
 
 namespace leinonen\DataLoader;
 
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
 use React\EventLoop\LoopInterface;
-use React\Promise\PromiseInterface;
 
-class DataLoader implements DataLoaderInterface
+final class DataLoader implements DataLoaderInterface
 {
     /**
      * @var callable
@@ -57,7 +57,7 @@ class DataLoader implements DataLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function load($key): PromiseInterface
+    public function load($key): ExtendedPromiseInterface
     {
         if ($key === null) {
             throw new \InvalidArgumentException(self::class . '::load must be called with a value, but got null');
@@ -91,7 +91,7 @@ class DataLoader implements DataLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function loadMany(array $keys): PromiseInterface
+    public function loadMany(array $keys): ExtendedPromiseInterface
     {
         return \React\Promise\all(
             \array_map(
