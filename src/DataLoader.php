@@ -1,10 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace leinonen\DataLoader;
 
+use function React\Promise\all;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
 use React\EventLoop\LoopInterface;
+use function React\Promise\reject;
+use function React\Promise\resolve;
 
 final class DataLoader implements DataLoaderInterface
 {
@@ -51,7 +54,7 @@ final class DataLoader implements DataLoaderInterface
         $this->batchLoadFunction = $batchLoadFunction;
         $this->eventLoop = $loop;
         $this->promiseCache = $cacheMap;
-        $this->options = $options === null ? new DataLoaderOptions() : $options;
+        $this->options = $options ?? new DataLoaderOptions();
     }
 
     /**
@@ -93,7 +96,7 @@ final class DataLoader implements DataLoaderInterface
      */
     public function loadMany(array $keys): ExtendedPromiseInterface
     {
-        return \React\Promise\all(
+        return all(
             \array_map(
                 function ($key) {
                     return $this->load($key);
@@ -127,7 +130,7 @@ final class DataLoader implements DataLoaderInterface
         if (! $this->promiseCache->get($key)) {
             // Cache a rejected promise if the value is an Exception, in order to match
             // the behavior of load($key).
-            $promise = $value instanceof \Exception ? \React\Promise\reject($value) : \React\Promise\resolve($value);
+            $promise = $value instanceof \Exception ? reject($value) : resolve($value);
 
             $this->promiseCache->set($key, $promise);
         }

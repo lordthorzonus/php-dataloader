@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace leinonen\DataLoader;
 
@@ -7,7 +7,7 @@ final class DataLoaderOptions
     /**
      * @var bool
      */
-    private $shouldBatch;
+    private  $shouldBatch;
 
     /**
      * @var null|int
@@ -19,13 +19,6 @@ final class DataLoaderOptions
      */
     private $shouldCache;
 
-    /**
-     * Initiates new DataLoaderOptions.
-     *
-     * @param null|int $maxBatchSize
-     * @param bool $shouldBatch
-     * @param bool $shouldCache
-     */
     public function __construct(
         ?int $maxBatchSize = null,
         bool $shouldBatch = true,
@@ -37,36 +30,24 @@ final class DataLoaderOptions
         $this->shouldCache = $shouldCache;
     }
 
-    /**
-     * @return bool
-     */
     public function shouldBatch(): bool
     {
         return $this->shouldBatch;
     }
 
-    /**
-     * @return null|int
-     */
     public function getMaxBatchSize(): ?int
     {
         return $this->maxBatchSize;
     }
 
-    /**
-     * @return bool
-     */
     public function shouldCache(): bool
     {
         return $this->shouldCache;
     }
 
-    /**
-     * @param null|int $maxBatchSize
-     */
-    private function validateMaxBatchSizeOption($maxBatchSize)
+    private function validateMaxBatchSizeOption(?int $maxBatchSize)
     {
-        if (($maxBatchSize !== null && ! \is_int($maxBatchSize)) || (int) $maxBatchSize < 0) {
+        if ($maxBatchSize !== null && $maxBatchSize < 0) {
             throw new \InvalidArgumentException('Expected argument $maxBatchSize to be null or a positive integer');
         }
     }

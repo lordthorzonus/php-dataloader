@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace leinonen\DataLoader;
 
@@ -13,7 +13,7 @@ interface DataLoaderInterface
      *
      * @param mixed $key
      *
-     * @return Promise
+     * @return ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
     public function load($key): ExtendedPromiseInterface;
@@ -30,7 +30,7 @@ interface DataLoaderInterface
      *
      * @param array $keys
      *
-     * @return Promise
+     * @return ExtendedPromiseInterface
      * @throws \InvalidArgumentException
      */
     public function loadMany(array $keys): ExtendedPromiseInterface;
@@ -40,14 +40,14 @@ interface DataLoaderInterface
      *
      * @param int|string $key
      *
-     * @return $this
+     * @return void
      */
     public function clear($key): void;
 
     /**
      * Clears the entire cache. Returns itself for method chaining.
      *
-     * @return $this
+     * @return void
      */
     public function clearAll(): void;
 
@@ -58,7 +58,7 @@ interface DataLoaderInterface
      * @param int|string $key
      * @param int|string $value
      *
-     * @return $this
+     * @return void
      */
     public function prime($key, $value): void;
 }
