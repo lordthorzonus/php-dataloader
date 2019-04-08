@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace leinonen\DataLoader;
 
@@ -7,7 +9,7 @@ final class DataLoaderOptions
     /**
      * @var bool
      */
-    private  $shouldBatch;
+    private $shouldBatch;
 
     /**
      * @var null|int
