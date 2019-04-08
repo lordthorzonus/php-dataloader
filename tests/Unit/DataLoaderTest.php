@@ -3,12 +3,14 @@
 namespace leinonen\DataLoader\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use function React\Promise\all;
 use React\Promise\Promise;
 use React\EventLoop\Factory;
 use leinonen\DataLoader\CacheMap;
 use React\EventLoop\LoopInterface;
 use leinonen\DataLoader\DataLoader;
 use leinonen\DataLoader\DataLoaderOptions;
+use function React\Promise\resolve;
 
 class DataLoaderTest extends TestCase
 {
@@ -36,7 +38,7 @@ class DataLoaderTest extends TestCase
     {
         $identityLoader = new DataLoader(
             function ($keys) {
-                return \React\Promise\resolve($keys);
+                return resolve($keys);
             }, $this->eventLoop, new CacheMap()
         );
 
@@ -94,7 +96,7 @@ class DataLoaderTest extends TestCase
 
         $values = [];
 
-        \React\Promise\all([$promise1, $promise2])->then(function ($returnedValues) use (&$values) {
+        all([$promise1, $promise2])->then(function ($returnedValues) use (&$values) {
             $values = $returnedValues;
         });
 
@@ -118,7 +120,7 @@ class DataLoaderTest extends TestCase
 
         $values = [];
 
-        \React\Promise\all([$promise1, $promise2, $promise3])->then(function ($returnedValues) use (&$values) {
+        all([$promise1, $promise2, $promise3])->then(function ($returnedValues) use (&$values) {
             $values = $returnedValues;
         });
 
@@ -143,7 +145,7 @@ class DataLoaderTest extends TestCase
 
         $values = [];
 
-        \React\Promise\all([$promise1, $promise2, $promise3])->then(function ($returnedValues) use (&$values) {
+        all([$promise1, $promise2, $promise3])->then(function ($returnedValues) use (&$values) {
             $values = $returnedValues;
         });
 
@@ -168,7 +170,7 @@ class DataLoaderTest extends TestCase
 
         $values = [];
 
-        \React\Promise\all([$promise1a, $promise1b])->then(function ($returnedValues) use (&$values) {
+        all([$promise1a, $promise1b])->then(function ($returnedValues) use (&$values) {
             $values = $returnedValues;
         });
 
@@ -188,7 +190,7 @@ class DataLoaderTest extends TestCase
         $a = null;
         $b = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
@@ -206,7 +208,7 @@ class DataLoaderTest extends TestCase
         $a2 = null;
         $c = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('C'),
         ])->then(function ($returnedValues) use (&$a2, &$c) {
@@ -225,7 +227,7 @@ class DataLoaderTest extends TestCase
         $b2 = null;
         $c2 = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
             $identityLoader->load('C'),
@@ -252,7 +254,7 @@ class DataLoaderTest extends TestCase
         $a = null;
         $b = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
@@ -272,7 +274,7 @@ class DataLoaderTest extends TestCase
         $a2 = null;
         $b2 = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a2, &$b2) {
@@ -296,7 +298,7 @@ class DataLoaderTest extends TestCase
         $a = null;
         $b = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
@@ -316,7 +318,7 @@ class DataLoaderTest extends TestCase
         $a2 = null;
         $b2 = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a2, &$b2) {
@@ -342,7 +344,7 @@ class DataLoaderTest extends TestCase
         $a = null;
         $b = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
@@ -368,7 +370,7 @@ class DataLoaderTest extends TestCase
         $a1 = null;
         $b1 = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a1, &$b1) {
@@ -387,7 +389,7 @@ class DataLoaderTest extends TestCase
         $a2 = null;
         $b2 = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a2, &$b2) {
@@ -413,7 +415,7 @@ class DataLoaderTest extends TestCase
         $a1 = null;
         $b1 = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a1, &$b1) {
@@ -434,7 +436,7 @@ class DataLoaderTest extends TestCase
         $a2 = null;
         $b2 = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a2, &$b2) {
@@ -642,7 +644,7 @@ class DataLoaderTest extends TestCase
         $valueA = null;
         $valueB = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load($keyA),
             $identityLoader->load($keyB),
         ])->then(function ($returnedValues) use (&$valueA, &$valueB) {
@@ -665,7 +667,7 @@ class DataLoaderTest extends TestCase
         $valueA = null;
         $valueB = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load($keyA),
             $identityLoader->load($keyB),
         ])->then(function ($returnedValues) use (&$valueA, &$valueB) {
@@ -689,7 +691,7 @@ class DataLoaderTest extends TestCase
         $a = null;
         $b = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load(1),
             $identityLoader->load(2),
         ])->then(function ($returnedValues) use (&$a, &$b) {
@@ -712,7 +714,7 @@ class DataLoaderTest extends TestCase
         $a = null;
         $b = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
         ])->then(function ($returnedValues) use (&$a, &$b) {
@@ -730,7 +732,7 @@ class DataLoaderTest extends TestCase
         $a2 = null;
         $c = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('C'),
         ])->then(function ($returnedValues) use (&$a2, &$c) {
@@ -749,7 +751,7 @@ class DataLoaderTest extends TestCase
         $b2 = null;
         $c2 = null;
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
             $identityLoader->load('B'),
             $identityLoader->load('C'),
@@ -773,14 +775,14 @@ class DataLoaderTest extends TestCase
     {
         $identityLoader = $this->createIdentityLoader();
 
-        \React\Promise\all([
+        all([
             $identityLoader->load('A'),
-            \React\Promise\resolve()->then(function () use ($identityLoader) {
-                \React\Promise\resolve()->then(function () use ($identityLoader) {
+            resolve()->then(function () use ($identityLoader) {
+                resolve()->then(function () use ($identityLoader) {
                     $identityLoader->load('B');
-                    \React\Promise\resolve()->then(function () use ($identityLoader) {
+                    resolve()->then(function () use ($identityLoader) {
                         $identityLoader->load('C');
-                        \React\Promise\resolve()->then(function () use ($identityLoader) {
+                        resolve()->then(function () use ($identityLoader) {
                             $identityLoader->load('D');
                         });
                     });
@@ -801,7 +803,7 @@ class DataLoaderTest extends TestCase
             function ($keys) use (&$deepLoadCalls) {
                 $deepLoadCalls[] = $keys;
 
-                return \React\Promise\resolve($keys);
+                return resolve($keys);
             }, $this->eventLoop, new CacheMap()
         );
 
@@ -828,7 +830,7 @@ class DataLoaderTest extends TestCase
         $b1 = null;
         $b2 = null;
 
-        \React\Promise\all([
+        all([
             $aLoader->load('A1'),
             $bLoader->load('B1'),
             $aLoader->load('A2'),
@@ -865,7 +867,7 @@ class DataLoaderTest extends TestCase
             function ($keys) {
                 $this->loadCalls[] = $keys;
 
-                return \React\Promise\resolve($keys);
+                return resolve($keys);
             }, $this->eventLoop, new CacheMap(), $options
         );
 
@@ -885,7 +887,7 @@ class DataLoaderTest extends TestCase
             function ($keys) {
                 $this->loadCalls[] = $keys;
 
-                return \React\Promise\resolve(
+                return resolve(
                     array_map(
                         function ($key) {
                             if ($key % 2 === 0) {
@@ -914,7 +916,7 @@ class DataLoaderTest extends TestCase
             function ($keys) {
                 $this->loadCalls[] = $keys;
 
-                return \React\Promise\resolve(
+                return resolve(
                     array_map(
                         function ($key) {
                             return new \Exception("Error: {$key}");
