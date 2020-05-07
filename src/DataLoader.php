@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace leinonen\DataLoader;
 
-use React\Promise\Promise;
-use function React\Promise\all;
-use function React\Promise\reject;
 use React\EventLoop\LoopInterface;
-use function React\Promise\resolve;
+use function React\Promise\all;
 use React\Promise\ExtendedPromiseInterface;
+use React\Promise\Promise;
+use function React\Promise\reject;
+use function React\Promise\resolve;
 
 final class DataLoader implements DataLoaderInterface
 {
@@ -88,7 +88,7 @@ final class DataLoader implements DataLoaderInterface
     {
         return all(
             \array_map(
-                fn($key) => $this->load($key),
+                fn ($key) => $this->load($key),
                 $keys
             )
         );
@@ -134,7 +134,7 @@ final class DataLoader implements DataLoaderInterface
     {
         if ($this->options->shouldBatch()) {
             $this->eventLoop->futureTick(
-                fn() => $this->dispatchQueue()
+                fn () => $this->dispatchQueue()
             );
 
             return;
@@ -189,7 +189,7 @@ final class DataLoader implements DataLoaderInterface
                     $this->handleSuccessfulDispatch($batch, $values);
                 }
             )
-            ->then(null, fn($error)  => $this->handleFailedDispatch($batch, $error));
+            ->then(null, fn ($error) => $this->handleFailedDispatch($batch, $error));
     }
 
     /**

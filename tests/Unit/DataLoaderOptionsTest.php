@@ -2,8 +2,8 @@
 
 namespace leinonen\DataLoader\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use leinonen\DataLoader\DataLoaderOptions;
+use PHPUnit\Framework\TestCase;
 
 class DataLoaderOptionsTest extends TestCase
 {
