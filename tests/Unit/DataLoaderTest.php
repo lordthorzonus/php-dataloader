@@ -2,15 +2,15 @@
 
 namespace leinonen\DataLoader\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
-use function React\Promise\all;
 use React\Promise\Promise;
 use React\EventLoop\Factory;
+use function React\Promise\all;
+use PHPUnit\Framework\TestCase;
 use leinonen\DataLoader\CacheMap;
 use React\EventLoop\LoopInterface;
+use function React\Promise\resolve;
 use leinonen\DataLoader\DataLoader;
 use leinonen\DataLoader\DataLoaderOptions;
-use function React\Promise\resolve;
 
 class DataLoaderTest extends TestCase
 {

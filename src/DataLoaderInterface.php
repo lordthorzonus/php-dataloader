@@ -1,10 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace leinonen\DataLoader;
 
-use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-
+use React\Promise\ExtendedPromiseInterface;
 
 interface DataLoaderInterface
 {
@@ -36,7 +37,7 @@ interface DataLoaderInterface
     public function loadMany(array $keys): ExtendedPromiseInterface;
 
     /**
-     * Clears the value for the given key from the cache if it exists. Returns itself for method chaining.
+     * Clears the value for the given key from the cache if it exists.
      *
      * @param int|string $key
      *
@@ -45,7 +46,7 @@ interface DataLoaderInterface
     public function clear($key): void;
 
     /**
-     * Clears the entire cache. Returns itself for method chaining.
+     * Clears the entire cache.
      *
      * @return void
      */
@@ -53,7 +54,6 @@ interface DataLoaderInterface
 
     /**
      * Adds the given key and value to the cache. If the key already exists no change is made.
-     * Returns itself for method chaining.
      *
      * @param int|string $key
      * @param int|string $value

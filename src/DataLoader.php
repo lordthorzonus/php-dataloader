@@ -1,13 +1,15 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace leinonen\DataLoader;
 
-use function React\Promise\all;
-use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
-use React\EventLoop\LoopInterface;
+use function React\Promise\all;
 use function React\Promise\reject;
+use React\EventLoop\LoopInterface;
 use function React\Promise\resolve;
+use React\Promise\ExtendedPromiseInterface;
 
 final class DataLoader implements DataLoaderInterface
 {

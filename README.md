@@ -172,20 +172,16 @@ $promises = \React\Promise\all([
 
 ### `clear($key)`
 
-Clears the value at `$key` from the cache, if it exists. Returns itself for
-method chaining.
+Clears the value at `$key` from the cache, if it exists.
 
 - `@param mixed key: An key value to clear.`
 
 ### `clearAll()`
 
-Clears the entire cache. Returns itself for method chaining.
+Clears the entire cache.
 
 ### `prime($key, $value)`
 
 Primes the cache with the provided key and value. If the key already exists, no
 change is made. (To forcefully prime the cache, clear the key first with
-`$loader->clear($key)->prime($key, $value)`. Returns itself for method chaining.
-
-
-
+`$loader->clear($key)->prime($key, $value)`.
