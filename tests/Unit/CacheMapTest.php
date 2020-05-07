@@ -2,8 +2,8 @@
 
 namespace leinonen\DataLoader\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use leinonen\DataLoader\CacheMap;
+use PHPUnit\Framework\TestCase;
 
 class CacheMapTest extends TestCase
 {

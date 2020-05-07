@@ -2,15 +2,15 @@
 
 namespace leinonen\DataLoader\Tests\Unit;
 
-use React\Promise\Promise;
-use React\EventLoop\Factory;
-use function React\Promise\all;
-use PHPUnit\Framework\TestCase;
 use leinonen\DataLoader\CacheMap;
-use React\EventLoop\LoopInterface;
-use function React\Promise\resolve;
 use leinonen\DataLoader\DataLoader;
 use leinonen\DataLoader\DataLoaderOptions;
+use PHPUnit\Framework\TestCase;
+use React\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
+use function React\Promise\all;
+use React\Promise\Promise;
+use function React\Promise\resolve;
 
 class DataLoaderTest extends TestCase
 {
@@ -37,7 +37,7 @@ class DataLoaderTest extends TestCase
     public function it_builds_a_really_simple_data_loader()
     {
         $identityLoader = new DataLoader(
-            fn($keys) => resolve($keys),
+            fn ($keys) => resolve($keys),
             $this->eventLoop,
             new CacheMap()
         );
@@ -889,7 +889,7 @@ class DataLoaderTest extends TestCase
 
                 return resolve(
                     \array_map(
-                        fn($key) => ($key % 2 === 0) ? $key : new \Exception("Odd: {$key}"),
+                        fn ($key) => ($key % 2 === 0) ? $key : new \Exception("Odd: {$key}"),
                         $keys
                     )
                 );
@@ -912,7 +912,7 @@ class DataLoaderTest extends TestCase
 
                 return resolve(
                     \array_map(
-                        fn($key) => new \Exception("Error: {$key}"),
+                        fn ($key) => new \Exception("Error: {$key}"),
                         $keys
                     )
                 );

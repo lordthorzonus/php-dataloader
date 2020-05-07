@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace leinonen\DataLoader;
 
-use React\Promise\Promise;
 use React\Promise\ExtendedPromiseInterface;
+use React\Promise\Promise;
 
 interface DataLoaderInterface
 {
