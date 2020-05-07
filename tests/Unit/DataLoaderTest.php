@@ -37,9 +37,9 @@ class DataLoaderTest extends TestCase
     public function it_builds_a_really_simple_data_loader()
     {
         $identityLoader = new DataLoader(
-            function ($keys) {
-                return resolve($keys);
-            }, $this->eventLoop, new CacheMap()
+            fn($keys) => resolve($keys),
+            $this->eventLoop,
+            new CacheMap()
         );
 
         /** @var Promise $promise1 */
@@ -888,14 +888,8 @@ class DataLoaderTest extends TestCase
                 $this->loadCalls[] = $keys;
 
                 return resolve(
-                    array_map(
-                        function ($key) {
-                            if ($key % 2 === 0) {
-                                return $key;
-                            }
-
-                            return new \Exception("Odd: {$key}");
-                        },
+                    \array_map(
+                        fn($key) => ($key % 2 === 0) ? $key : new \Exception("Odd: {$key}");
                         $keys
                     )
                 );
@@ -917,10 +911,8 @@ class DataLoaderTest extends TestCase
                 $this->loadCalls[] = $keys;
 
                 return resolve(
-                    array_map(
-                        function ($key) {
-                            return new \Exception("Error: {$key}");
-                        },
+                    \array_map(
+                        fn($key) => new \Exception("Error: {$key}"),
                         $keys
                     )
                 );

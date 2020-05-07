@@ -4,10 +4,7 @@ namespace leinonen\DataLoader;
 
 final class CacheMap implements CacheMapInterface, \Countable
 {
-    /**
-     * @var array
-     */
-    private $cache = [];
+    private array $cache = [];
 
     /**
      * {@inheritdoc}

@@ -1,7 +1,8 @@
 # Changelog
 
 ## Updating from 1.0.0 to 2.0.0
- - Overall php version requirement was bumped from `5.5` to `7.3`
+ - Overall php version requirement was bumped from `5.5` to `7.4`
+ - Bumped version requirements for React dependencies and switched DataLoader to return ExtendedPromiseInterfaces instead of PromiseInterfaces.
  - Fluent interfaces in `Dataloader::prime()`,`DataLoader::clear` and `DataLoader::clearAll()` were removed. So change usages like:
     ```php
     $dataloader->clear('A')->prime('A', 'Y');
