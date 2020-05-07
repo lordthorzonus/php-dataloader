@@ -889,7 +889,7 @@ class DataLoaderTest extends TestCase
 
                 return resolve(
                     \array_map(
-                        fn($key) => ($key % 2 === 0) ? $key : new \Exception("Odd: {$key}");
+                        fn($key) => ($key % 2 === 0) ? $key : new \Exception("Odd: {$key}"),
                         $keys
                     )
                 );
