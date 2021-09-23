@@ -857,8 +857,7 @@ class DataLoaderTest extends TestCase
     /**
      * Creates a simple DataLoader which returns the given keys as values.
      *
-     * @param array $options
-     *
+     * @param  array  $options
      * @return DataLoader
      */
     private function createIdentityLoader($options = null)
@@ -877,8 +876,7 @@ class DataLoaderTest extends TestCase
     /**
      * Creates a simple DataLoader which returns the given keys as values.
      *
-     * @param array $options
-     *
+     * @param  array  $options
      * @return DataLoader
      */
     private function createEvenLoader($options = null)

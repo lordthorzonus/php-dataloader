@@ -210,7 +210,7 @@ class DataLoaderAbuseTest extends TestCase
      * Creates a simple DataLoader.
      *
      * @param $batchLoadFunction
-     * @param array $options
+     * @param  array  $options
      * @return DataLoader
      */
     private function createDataLoader($batchLoadFunction, $options = null)

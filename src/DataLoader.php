@@ -29,11 +29,11 @@ final class DataLoader implements DataLoaderInterface
     /**
      * Initiates a new DataLoader.
      *
-     * @param callable $batchLoadFunction The function which will be called for the batch loading.
-     * It must accept an array of keys and returns a Promise which resolves to an array of values.
-     * @param LoopInterface $loop
-     * @param CacheMapInterface $cacheMap
-     * @param null|DataLoaderOptions $options
+     * @param  callable  $batchLoadFunction  The function which will be called for the batch loading.
+     *                                       It must accept an array of keys and returns a Promise which resolves to an array of values.
+     * @param  LoopInterface  $loop
+     * @param  CacheMapInterface  $cacheMap
+     * @param  null|DataLoaderOptions  $options
      */
     public function __construct(
         callable $batchLoadFunction,
@@ -166,7 +166,7 @@ final class DataLoader implements DataLoaderInterface
     /**
      * Dispatches a batch of a queue. The given batch can also be the whole queue.
      *
-     * @param array $batch
+     * @param  array  $batch
      */
     private function dispatchQueueBatch($batch)
     {
@@ -195,9 +195,8 @@ final class DataLoader implements DataLoaderInterface
     /**
      * Dispatches the given queue in multiple batches.
      *
-     * @param array $queue
-     * @param int $maxBatchSize
-     *
+     * @param  array  $queue
+     * @param  int  $maxBatchSize
      * @return void
      */
     private function dispatchQueueInMultipleBatches(array $queue, $maxBatchSize): void
@@ -214,8 +213,8 @@ final class DataLoader implements DataLoaderInterface
     /**
      * Handles the batch by resolving the promises and rejecting ones that return Exceptions.
      *
-     * @param array $batch
-     * @param array $values
+     * @param  array  $batch
+     * @param  array  $values
      */
     private function handleSuccessfulDispatch(array $batch, array $values): void
     {
@@ -230,8 +229,8 @@ final class DataLoader implements DataLoaderInterface
     /**
      * Handles the failed batch dispatch.
      *
-     * @param array $batch
-     * @param \Exception $error
+     * @param  array  $batch
+     * @param  \Exception  $error
      */
     private function handleFailedDispatch(array $batch, \Exception $error)
     {
@@ -245,8 +244,8 @@ final class DataLoader implements DataLoaderInterface
     /**
      * Validates the batch promise's output.
      *
-     * @param array $values Values from resolved promise.
-     * @param array $keys Keys which the DataLoaders load was called with
+     * @param  array  $values  Values from resolved promise.
+     * @param  array  $keys  Keys which the DataLoaders load was called with
      *
      * @throws DataLoaderException
      */

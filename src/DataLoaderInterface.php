@@ -12,9 +12,9 @@ interface DataLoaderInterface
     /**
      * Returns a Promise for the value represented by the given key.
      *
-     * @param mixed $key
-     *
+     * @param  mixed  $key
      * @return ExtendedPromiseInterface
+     *
      * @throws \InvalidArgumentException
      */
     public function load($key): ExtendedPromiseInterface;
@@ -29,9 +29,9 @@ interface DataLoaderInterface
      *      $dataLoader->load('b');
      *  });
      *
-     * @param array $keys
-     *
+     * @param  array  $keys
      * @return ExtendedPromiseInterface
+     *
      * @throws \InvalidArgumentException
      */
     public function loadMany(array $keys): ExtendedPromiseInterface;
@@ -39,8 +39,7 @@ interface DataLoaderInterface
     /**
      * Clears the value for the given key from the cache if it exists.
      *
-     * @param int|string $key
-     *
+     * @param  int|string  $key
      * @return void
      */
     public function clear($key): void;
@@ -55,9 +54,8 @@ interface DataLoaderInterface
     /**
      * Adds the given key and value to the cache. If the key already exists no change is made.
      *
-     * @param int|string $key
-     * @param int|string $value
-     *
+     * @param  int|string  $key
+     * @param  int|string  $value
      * @return void
      */
     public function prime($key, $value): void;

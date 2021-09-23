@@ -70,8 +70,7 @@ final class CacheMap implements CacheMapInterface, \Countable
     /**
      * Returns the index of the value from the cache array with the given key.
      *
-     * @param mixed $cacheKey
-     *
+     * @param  mixed  $cacheKey
      * @return mixed
      */
     private function findCacheIndexByKey($cacheKey)
