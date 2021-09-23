@@ -10,8 +10,7 @@ interface CacheMapInterface
      * Returns the given entry from cache with the given key.
      * Returns false if no entry with the key is found.
      *
-     * @param mixed $key
-     *
+     * @param  mixed  $key
      * @return bool|mixed
      */
     public function get($key);
@@ -19,9 +18,8 @@ interface CacheMapInterface
     /**
      * Sets the cache with the given key and value.
      *
-     * @param mixed $key
-     * @param mixed $value
-     *
+     * @param  mixed  $key
+     * @param  mixed  $value
      * @return void
      */
     public function set($key, $value): void;
@@ -29,8 +27,7 @@ interface CacheMapInterface
     /**
      * Deletes the cache entry with the given key.
      *
-     * @param mixed $key
-     *
+     * @param  mixed  $key
      * @return void
      */
     public function delete($key): void;
