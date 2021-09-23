@@ -3,7 +3,7 @@ Port of the [Facebook's DataLoader](https://github.com/facebook/dataloader) to P
 
 DataLoader is a generic utility to be used as part of your application's data fetching layer to provide a simplified and consistent API over various remote data sources such as databases or web services via batching and caching.
 
-[![Build Status](https://travis-ci.org/lordthorzonus/php-dataloader.svg?branch=master)](https://travis-ci.org/lordthorzonus/php-dataloader)
+[![Build Status](https://app.travis-ci.com/lordthorzonus/php-dataloader.svg?branch=master)](https://app.travis-ci.com/lordthorzonus/php-dataloader)
 [![Code Coverage](https://scrutinizer-ci.com/g/lordthorzonus/php-dataloader/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/lordthorzonus/php-dataloader/?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/leinonen/php-dataloader/v/stable)](https://packagist.org/packages/leinonen/php-dataloader)
 [![Total Downloads](https://poser.pugx.org/leinonen/php-dataloader/downloads)](https://packagist.org/packages/leinonen/php-dataloader)
