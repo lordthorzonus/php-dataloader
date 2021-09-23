@@ -9,10 +9,7 @@ build:
     tests:
         override:
             -
-                command: 'vendor/bin/phpunit --coverage-clover=coverage.clover'
-                coverage:
-                    file: 'coverage.clover'
-                    format: 'php-clover'
+                command: 'vendor/bin/phpunit'
 filter:
     excluded_paths:
         - 'tests/*'
