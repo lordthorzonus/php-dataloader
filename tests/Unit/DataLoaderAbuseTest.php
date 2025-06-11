@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
+
 use function React\Promise\resolve;
 
 class DataLoaderAbuseTest extends TestCase
@@ -209,8 +210,8 @@ class DataLoaderAbuseTest extends TestCase
     /**
      * Creates a simple DataLoader.
      *
-     * @param $batchLoadFunction
-     * @param ?\leinonen\DataLoader\DataLoaderOptions $options
+     * @param  $batchLoadFunction
+     * @param  ?\leinonen\DataLoader\DataLoaderOptions  $options
      * @return DataLoader
      */
     private function createDataLoader($batchLoadFunction, $options = null)

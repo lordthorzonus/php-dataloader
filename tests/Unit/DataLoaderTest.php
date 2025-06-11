@@ -8,8 +8,9 @@ use leinonen\DataLoader\DataLoaderOptions;
 use PHPUnit\Framework\TestCase;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
-use function React\Promise\all;
 use React\Promise\Promise;
+
+use function React\Promise\all;
 use function React\Promise\resolve;
 
 class DataLoaderTest extends TestCase

@@ -273,7 +273,7 @@ final class DataLoader implements DataLoaderInterface
     /**
      * Validates the batch promise returned from the batch load function.
      *
-     * @param $batchPromise
+     * @param  $batchPromise
      *
      * @throws DataLoaderException
      */
