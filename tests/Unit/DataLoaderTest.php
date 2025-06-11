@@ -777,12 +777,12 @@ class DataLoaderTest extends TestCase
 
         all([
             $identityLoader->load('A'),
-            resolve()->then(function () use ($identityLoader) {
-                resolve()->then(function () use ($identityLoader) {
+            resolve(null)->then(function () use ($identityLoader) {
+                resolve(null)->then(function () use ($identityLoader) {
                     $identityLoader->load('B');
-                    resolve()->then(function () use ($identityLoader) {
+                    resolve(null)->then(function () use ($identityLoader) {
                         $identityLoader->load('C');
-                        resolve()->then(function () use ($identityLoader) {
+                        resolve(null)->then(function () use ($identityLoader) {
                             $identityLoader->load('D');
                         });
                     });

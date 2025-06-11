@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace leinonen\DataLoader;
 
 use React\EventLoop\LoopInterface;
-use function React\Promise\all;
-use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
+use React\Promise\PromiseInterface;
+
+use function React\Promise\all;
 use function React\Promise\reject;
 use function React\Promise\resolve;
 
@@ -39,7 +40,7 @@ final class DataLoader implements DataLoaderInterface
         callable $batchLoadFunction,
         LoopInterface $loop,
         CacheMapInterface $cacheMap,
-        DataLoaderOptions $options = null
+        ?DataLoaderOptions $options = null
     ) {
         $this->batchLoadFunction = $batchLoadFunction;
         $this->eventLoop = $loop;
@@ -50,7 +51,7 @@ final class DataLoader implements DataLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function load($key): ExtendedPromiseInterface
+    public function load($key): PromiseInterface
     {
         if ($key === null) {
             throw new \InvalidArgumentException(self::class . '::load must be called with a value, but got null');
@@ -84,7 +85,7 @@ final class DataLoader implements DataLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function loadMany(array $keys): ExtendedPromiseInterface
+    public function loadMany(array $keys): PromiseInterface
     {
         return all(
             \array_map(
