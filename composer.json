@@ -1,5 +1,5 @@
 {
-    "name": "plumtreesystems/php-dataloader",
+    "name": "leinonen/php-dataloader",
     "type": "library",
     "description": "Port of Facebook's dataloader to PHP",
     "keywords": ["batch loading", "dataloader", "graphql"],
