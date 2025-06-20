@@ -6,9 +6,10 @@ use leinonen\DataLoader\CacheMap;
 use leinonen\DataLoader\DataLoader;
 use leinonen\DataLoader\DataLoaderException;
 use PHPUnit\Framework\TestCase;
-use React\EventLoop\Factory;
+use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
+
 use function React\Promise\resolve;
 
 class DataLoaderAbuseTest extends TestCase
@@ -20,7 +21,7 @@ class DataLoaderAbuseTest extends TestCase
 
     public function setUp(): void
     {
-        $this->eventLoop = Factory::create();
+        $this->eventLoop = Loop::get();
     }
 
     /**
@@ -162,7 +163,7 @@ class DataLoaderAbuseTest extends TestCase
     public function batch_function_must_return_a_promise_of_an_array_not_null()
     {
         $badLoader = $this->createDataLoader(function ($keys) {
-            return resolve();
+            return resolve(null);
         });
 
         $exception = null;
@@ -209,8 +210,8 @@ class DataLoaderAbuseTest extends TestCase
     /**
      * Creates a simple DataLoader.
      *
-     * @param $batchLoadFunction
-     * @param  array  $options
+     * @param  $batchLoadFunction
+     * @param  ?\leinonen\DataLoader\DataLoaderOptions  $options
      * @return DataLoader
      */
     private function createDataLoader($batchLoadFunction, $options = null)
